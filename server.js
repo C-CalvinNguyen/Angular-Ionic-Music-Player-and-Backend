@@ -1,3 +1,4 @@
+/*
 const express = require('express')
 let app = express()
 
@@ -17,3 +18,4 @@ mongoose.connect(DB_URL, {
         console.log('Could not connect to the database. Exiting now...', err);
         process.exit();
     });
+*/
