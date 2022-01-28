@@ -30,6 +30,7 @@ app.get('/song', (req, res) => {
     stream.pipe(res)
 })
 
+/*
 app.get('/video', (req, res) => {
     
     const range = req.headers.range
@@ -54,5 +55,6 @@ app.get('/video', (req, res) => {
     stream.pipe(res)
 
 })
+*/
 
 module.exports = app
