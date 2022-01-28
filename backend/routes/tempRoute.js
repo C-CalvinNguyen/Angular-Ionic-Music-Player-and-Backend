@@ -1,11 +1,16 @@
-const express = require('express')
+const router = require('express').Router()
+const songController = require('../controllers/song-controller.js')
 const fs = require('fs')
-let app = express()
 
+/*
 app.get('/', (req, res) => {
     res.send("Test Home");
 });
+*/
 
+router.get('/song', songController.get_audio);
+
+/*
 app.get('/song', (req, res) => {
 
     const range = req.headers.range
@@ -29,6 +34,7 @@ app.get('/song', (req, res) => {
     const stream = fs.createReadStream(songPath, {start, end})
     stream.pipe(res)
 })
+*/
 
 /*
 app.get('/video', (req, res) => {
@@ -57,4 +63,4 @@ app.get('/video', (req, res) => {
 })
 */
 
-module.exports = app
+module.exports = router
