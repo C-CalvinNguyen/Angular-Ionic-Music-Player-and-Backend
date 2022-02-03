@@ -10,7 +10,7 @@ function createToken(user) {
         config.jwtSecret is the SECRET
         expires in is the option
     */
-    return jwt.sign({id: user.id, email: user.email}, config.jwtSecret, {
+    return jwt.sign({id: user.id, email: user.email, username: user.username}, config.jwtSecret, {
         expiresIn: 300
     })
 }
@@ -18,18 +18,24 @@ function createToken(user) {
 // Called to register a user
 const registerUser = (req, res) => {
 
-    // Check if Body of Request (JSON) has email & password
-    if(!req.body.email || !req.body.password) {
-        return res.status(400).json({'message': 'Please enter email and password'})
+    // Check if Body of Request (JSON) has required credentials
+    if(!req.body.username || !req.body.email || !req.body.password) {
+        return res.status(400).json({'message': 'Please enter the username, email, and password'})
     }
 
-    // Checks if user already exists
-    User.findOne({ email: req.body.email }, (err, user) => {
+    // Checks if username or email are taken
+    User.findOne({ $or: [{email: req.body.email}, {username: req.body.username}]}, (err, user) => {
         if (err) {
             return res.status(400).json({'message': err})
         }
+
+        // Return username or email error
         if (user) {
-            return res.status(400).json({'message': 'User already exists.'})
+            if (user.username === req.body.username) {
+                return res.status(400).json({'message': "Username taken."})
+            } else {
+                return res.status(400).json({'message': "Email taken."})
+            }
         }
 
         // Creates new user if no match (UNIQUE) and saves to database
@@ -46,17 +52,18 @@ const registerUser = (req, res) => {
 // Called when logging in and creates token
 const loginUser = (req, res) => {
     
-    // Check if Body of Request (JSON) has email & password
-    if(!req.body.email || !req.body.password) {
-        return res.status(400).json({'message': 'Please enter email and password'})
+    // Check if Body of Request (JSON) has credentials
+    if(!req.body.username || !req.body.email || !req.body.password) {
+        return res.status(400).json({'message': 'Please enter the username, email, and password'})
     }
 
-    // Checks if user exists
-    User.findOne({ email: req.body.email}, (err, user) => {
+    // Finds user using username and email
+    User.findOne({ email: req.body.email, username: req.body.username}, (err, user) => {
         if (err) {
             return res.status(400).json({'message': err})
         }
 
+        // If a user is not returned, it does not exist
         if (!user) {
             return res.status(400).json({'message': 'User does not exist'})
         }
@@ -77,7 +84,28 @@ const loginUser = (req, res) => {
     })
 }
 
+const adminManage = (req, res) => {
+    
+    User.findOne({ email: req.user.email, username: req.user.username}, (err, user) => {
+        if (err) {
+            return res.status(400).json({'message': err})
+        }
+
+        // If a user is not returned, it does not exist
+        if (!user) {
+            return res.status(400).json({'message': 'User does not exist'})
+        }
+
+        if (user.role != 'admin') {
+            return res.status(403).json({'message': 'User does not have permissions.'})
+        } else {
+            res.send('Admin Page')
+        }
+    })
+}
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    adminManage
 }

@@ -13,9 +13,9 @@ Modules
     nodemon
         used to test server, live reloading
     passport
-        used for authentication
+        used for authentication, uses strategies to authenticate requests
     passport-jwt
-        used for authentication
+        used for authentication, strategy for passport
 */
 // Implemented Streaming From Local File System
 // TO DO: Implement Audio Information on MongoDB (Keep Audio File ON LOCAL)
@@ -27,21 +27,21 @@ const passport = require('passport')
 const routes = require('./routes/routes.js')
 const mongoose = require('mongoose')
 const config = require('./config/config.js')
-const passportMiddleware = require('./middleware/passport.js')
+const strategyJwt = require('./middleware/jwt-strategy.js')
 const port = process.env.PORT || 8080
 
-// Create App Using Express
+// Create app using express
 const app = express()
 
 // Use bodyParser to get info from POST request body
-app.use(bodyParser.urlencoded({ extended: false}))
+app.use(bodyParser.urlencoded({ extended: true}))
 app.use(bodyParser.json())
 
 // Initialize passport module and use the middleware 
 app.use(passport.initialize())
-passport.use(passportMiddleware)
+passport.use(strategyJwt)
 
-// Use Routes
+// Use routes
 app.use(routes)
 
 // MongoDB Connection
@@ -57,7 +57,6 @@ connection.on('error', (err) => {
     console.log("FAILED - MongoDB connection error. " + err);
     process.exit();
 });
-
 
 // Start server
 app.listen(port, () => {

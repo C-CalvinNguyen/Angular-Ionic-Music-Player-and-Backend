@@ -10,7 +10,7 @@
 const User = require('../models/user.js')
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
-var config = require('../config/config.js')
+const config = require('../config/config.js')
 
 /*
     secretOrKey is the string or buffer for verifying the token's signature REQUIRED
@@ -19,9 +19,10 @@ var config = require('../config/config.js')
     fromAuthHeaderAsBearerToken creates a new extractor that looks for the JWT 
         in the authorization header with the scheme 'brearer'
 */
-var options = {
+let options = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config.jwtSecret
+    secretOrKey: config.jwtSecret,
+    algorithms: 'HS256'
 }
 
 /*
@@ -31,7 +32,8 @@ var options = {
     creating new JwtStrategy which will be passed to the app
         finds User in database using jwt_payload.id if user is not found send error
 */
-module.exports = new JwtStrategy(options, function (jwt_payload, done) {
+
+let jwtStrategy = new JwtStrategy(options, function (jwt_payload, done) {
     User.findById(jwt_payload.id, function (err, user) {
         if (err) {
             return done(err, false);
@@ -43,3 +45,5 @@ module.exports = new JwtStrategy(options, function (jwt_payload, done) {
         }
     });
 });
+
+module.exports = jwtStrategy

@@ -1,8 +1,14 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
+const saltRounds = 10
 
 // User Mongoose Model
 var UserSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        unique: true,
+        required: true
+    },
     email: {
         type: String,
         unique: true,
@@ -10,9 +16,19 @@ var UserSchema = new mongoose.Schema({
         lowercase: true,
         trim: true
     },
-  password: {
+    password: {
         type: String,
         required: true
+    },
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
+    },
+    status: {
+        type: String,
+        enum: ['ACTIVE', 'SUSPENDED', 'BANNED'],
+        default: 'ACTIVE'
     }
 })
 
@@ -27,7 +43,7 @@ UserSchema.pre('save', function(next) {
     if (!user.isModified('password')) return next();
 
     // If it was modified use bcrypt to generate salt
-    bcrypt.genSalt(10, function(err, salt) {
+    bcrypt.genSalt(saltRounds, function(err, salt) {
         if (err) return next(err)
 
         // Use salt to hash the password and set password as the hashed output
