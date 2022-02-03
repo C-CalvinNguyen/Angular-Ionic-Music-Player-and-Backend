@@ -4,7 +4,7 @@ const songController = require('../controllers/song-controller.js')
 const fs = require('fs')
 const app = express()
 
-app.get('/', (req, res) => {
+router.get('/', (req, res) => {
     res.send("Test Home");
 });
 
