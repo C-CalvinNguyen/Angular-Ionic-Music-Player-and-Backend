@@ -37,10 +37,11 @@ const app = express()
 app.use(bodyParser.urlencoded({ extended: false}))
 app.use(bodyParser.json())
 
-// Passport module in application to use the middleware passport.js
+// Initialize passport module and use the middleware 
 app.use(passport.initialize())
 passport.use(passportMiddleware)
 
+// Use Routes
 app.use(routes)
 
 // MongoDB Connection
@@ -57,6 +58,8 @@ connection.on('error', (err) => {
     process.exit();
 });
 
+
+// Start server
 app.listen(port, () => {
     console.log('Server is listening at port ' + port)
 })
