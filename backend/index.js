@@ -23,10 +23,11 @@ Modules
 
 const express = require('express')
 const bodyParser = require('body-parser')
-//const passport = require('passport')
+const passport = require('passport')
 const routes = require('./routes/routes.js')
 const mongoose = require('mongoose')
 const config = require('./config/config.js')
+const passportMiddleware = require('./middleware/passport.js')
 const port = process.env.PORT || 8080
 
 // Create App Using Express
@@ -36,8 +37,13 @@ const app = express()
 app.use(bodyParser.urlencoded({ extended: false}))
 app.use(bodyParser.json())
 
+// Passport module in application to use the middleware passport.js
+app.use(passport.initialize())
+passport.use(passportMiddleware)
+
 app.use(routes)
 
+// MongoDB Connection
 mongoose.connect(config.db, { useNewUrlParser: true , useUnifiedTopology: true})
 
 const connection = mongoose.connection
@@ -54,27 +60,3 @@ connection.on('error', (err) => {
 app.listen(port, () => {
     console.log('Server is listening at port ' + port)
 })
-
-
-/*
-const express = require('express')
-const bodyParser = require('body-parser')
-//const mongoose = require('mongoose')
-const routes = require('./routes/routes.js')
-const app = express()
-
-// MiddleWare
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: true}))
-
-app.get('/', (req, res) => {
-    res.send("Test Home");
-});
-
-app.use(routes)
-
-// HTTP Server
-app.listen(8080, () => {
-    console.log("Server is listening on port 8080");
-});
-*/

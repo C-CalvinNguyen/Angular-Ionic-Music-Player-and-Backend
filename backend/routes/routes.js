@@ -1,66 +1,21 @@
 const router = require('express').Router()
 const express = require('express')
 const songController = require('../controllers/song-controller.js')
-const fs = require('fs')
-const app = express()
+const userController = require('../controllers/user-controller.js')
+const passport = require('passport')
 
 router.get('/', (req, res) => {
-    res.send("Test Home");
+    res.send("Test Home for Backend");
 });
 
-router.get('/song', songController.get_audio);
+router.post('/register', userController.registerUser)
+router.post('/login', userController.loginUser)
 
-/*
-app.get('/song', (req, res) => {
-
-    const range = req.headers.range
-    const songPath = './resources/audio/1/PerituneMaterial_Harvest6_loop.mp3'
-    const songSize = fs.statSync(songPath).size
-
-    const chunkSize = 1 * 1e+6
-    const start = Number(range.replace(/\D/g, ''))
-    const end = Math.min(start + chunkSize, songSize - 1)
-
-    const contentLength = end - start + 1
-    
-    const headers = {
-        "Content-Range": `bytes ${start} - ${end}/${songSize}`,
-        "Accet-Ranges": 'bytes',
-        "Content-Length": contentLength,
-        "Content-Type": 'audio/mp3'
-    }
-    res.writeHead(206, headers)
-
-    const stream = fs.createReadStream(songPath, {start, end})
-    stream.pipe(res)
+// Using middleware authentication, first argument is the strategy (JWT)
+router.get('/app', passport.authenticate('jwt', {session: false}), (req, res) => {
+    return res.json({ message: `Hello ${req.user.email}`})
 })
-*/
 
-/*
-app.get('/video', (req, res) => {
-    
-    const range = req.headers.range
-    const videoPath = './resources/video/20171215_209724174_Creative.mp4'
-    const videoSize = fs.statSync(videoPath).size
-
-    const chunkSize = 1 * 1e+6
-    const start = Number(range.replace(/\D/g, ''))
-    const end = Math.min(start + chunkSize, videoSize - 1)
-
-    const contentLength = end - start + 1
-    
-    const headers = {
-        "Content-Range": `bytes ${start} - ${end}/${videoSize}`,
-        "Accet-Ranges": 'bytes',
-        "Content-Length": contentLength,
-        "Content-Type": 'video/mp4'
-    }
-    res.writeHead(206, headers)
-
-    const stream = fs.createReadStream(videoPath, {start, end})
-    stream.pipe(res)
-
-})
-*/
+router.get('/song', passport.authenticate('jwt', {session: false}), songController.get_audio)
 
 module.exports = router
