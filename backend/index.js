@@ -37,7 +37,7 @@ const app = express()
 app.use(bodyParser.urlencoded({ extended: true}))
 app.use(bodyParser.json())
 
-// Initialize passport module and use the middleware 
+// Initialize passport module to use as middleware, and use the strategyJwt
 app.use(passport.initialize())
 passport.use(strategyJwt)
 

@@ -33,8 +33,11 @@ let options = {
         finds User in database using jwt_payload.id if user is not found send error
 */
 
+// Changed find User.findById to FindOne (_id, email, username)
 let jwtStrategy = new JwtStrategy(options, function (jwt_payload, done) {
-    User.findById(jwt_payload.id, function (err, user) {
+    User.findOne({  _id: jwt_payload.id, 
+                    email: jwt_payload.email, 
+                    username: jwt_payload.username }, function (err, user) {
         if (err) {
             return done(err, false);
         }
@@ -43,7 +46,7 @@ let jwtStrategy = new JwtStrategy(options, function (jwt_payload, done) {
         } else {
             return done(null, false);
         }
-    });
-});
+    })
+})
 
 module.exports = jwtStrategy
