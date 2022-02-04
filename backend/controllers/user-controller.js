@@ -37,7 +37,7 @@ const account = async (req, res) => {
 
 }
 
-// Updates user
+// Updates Username & Email
 const updateAccount = async (req, res) => {
     
     try {
@@ -45,7 +45,6 @@ const updateAccount = async (req, res) => {
 
         userFind.username = req.body.username
         userFind.email = req.body.email
-        userFind.password = req.body.password
 
         await userFind.save()
 
@@ -59,7 +58,59 @@ const updateAccount = async (req, res) => {
     }
 }
 
+// Updates Password (Gets old password, compares and then updates to new password and hashes)
+const updatePassword = async (req, res) => {
+
+    try {
+
+        const userFind = await User.findOne({ email: req.user.email, username: req.user.username}) 
+
+        await userFind.comparePassword(req.body.oldPassword, async (err, isMatch) => {
+
+            if (isMatch && !err) {
+
+                userFind.password = req.body.newPassword
+                await userFind.save()
+                return res.status(200).json({ "message": "Password Updated", token: createToken(userFind)})
+            } else {
+                return res.status(400).json({'message': 'Password does not match.', 'error': err})
+            }
+
+        })
+
+    } catch (err) {
+        res.status(400).json(err)
+    }
+}
+
+// Deletes Account Given Credentials (Password When Logged In (JWT))
+const deleteAccount = async (req, res) => {
+
+    try {
+
+        const userFind = await User.findOne({ email: req.user.email, username: req.user.username}) 
+
+        await userFind.comparePassword(req.body.password, async (err, isMatch) => {
+
+            if (isMatch && !err) {
+
+                await User.findByIdAndDelete(userFind._id.toString())
+                return res.status(200).json({ "message": "Account deleted." })
+            } else {
+                return res.status(400).json({'message': 'Password does not match.', 'error': err})
+            }
+
+        })
+
+
+    } catch (err) {
+        res.status(400).json(err)
+    }
+}
+
 module.exports = {
     account,
-    updateAccount
+    updateAccount,
+    updatePassword,
+    deleteAccount
 }

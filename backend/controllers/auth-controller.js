@@ -75,7 +75,7 @@ const loginUser = async (req, res) => {
             if (isMatch && !err) {
                 return res.status(200).json({ token: createToken(user)})
             } else {
-                return res.status(400).json({'message': 'Password does not exist', 'error': err})
+                return res.status(400).json({'message': 'Password does not match.', 'error': err})
             }
         })
 

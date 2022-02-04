@@ -19,7 +19,9 @@ router.post('/login', authController.loginUser)
 
 // User Controller
 router.get('/account', passport.authenticate('jwt', {session: false}), userController.account)
-router.post('/account/update', passport.authenticate('jwt', {session: false}), userController.updateAccount)
+router.post('/account/update/info', passport.authenticate('jwt', {session: false}), userController.updateAccount)
+router.post('/account/update/password', passport.authenticate('jwt', {session: false}), userController.updatePassword)
+router.delete('/account/delete', passport.authenticate('jwt', {session: false}), userController.deleteAccount)
 
 // Admin Controller
 router.get('/admin', passport.authenticate('jwt', {session: false}), adminController.adminManage)
