@@ -1,5 +1,60 @@
 const fs = require('fs')
 const path = require('path')
+const Song = require('../models/song.js')
+
+function convertSong(song) {
+
+}
+
+// Called when Adding A Song (Multipart/FormData Using Multer)
+const addSong = async (req, res) => {
+
+    /*
+    if (!req.body.title || !req.body.artists) {
+        return res.status(400).json({'message': 'Please enter title & artists'})
+    }
+    */
+
+    try {
+
+        // Get the file name without the extension
+        let fileArray = req.file.originalname.split('.')
+        let ext = fileArray.pop()
+        let fileLoc = fileArray.join('.')
+
+        // Set the File Path, _id / filename / format / file
+        let tempPath = path.join(__dirname, '..', 'resources', 'audio', req.user._id.toString(), fileLoc)
+        //console.log(req.file)
+
+        // Make the directory
+        fs.mkdir(tempPath, {recursive: true}, (err) => {
+            return res.status(400).json({'message': err})
+        })
+
+        // Save Song to database
+        let tempSong = Song()
+        tempSong.title = req.body.title
+        tempSong.artists = req.body.artists
+        tempSong.path = (path.join(tempPath, ext, req.file.originalname))
+        //console.log(tempSong)
+        //console.log(tempPath)
+
+        // Save Song to directory
+        fs.writeFile(path.join(tempPath, ext, req.file.originalname), req.file.buffer, (err) => {
+            if (err) {
+                console.log(err)
+                return res.status(400).json({'message': err})
+            } else {
+                return res.status(200).json({'message': 'File written to path'})
+            }
+        })
+        
+        //return res.status(200).json({'message': 'File written to path'})
+    } catch (err) {
+        console.log(err)
+        return res.status(400).json({'message': err})
+    }
+}
 
 const get_audio = async (req, res) => {
 
@@ -62,5 +117,6 @@ app.get('/video', (req, res) => {
 */
 
 module.exports = {
-    get_audio
+    get_audio,
+    addSong
 }
