@@ -9,51 +9,62 @@ function convertSong(song) {
 // Called when Adding A Song (Multipart/FormData Using Multer)
 const addSong = async (req, res) => {
 
-    /*
+    // Checks if fields exist
     if (!req.body.title || !req.body.artists) {
         return res.status(400).json({'message': 'Please enter title & artists'})
     }
-    */
 
     try {
 
-        // Get the file name without the extension
+        // Split the file name and the extension
         let fileArray = req.file.originalname.split('.')
         let ext = fileArray.pop()
         let fileLoc = fileArray.join('.')
 
         // Set the File Path, _id / filename / format / file
-        let tempPath = path.join(__dirname, '..', 'resources', 'audio', req.user._id.toString(), fileLoc)
-        //console.log(req.file)
+        let tempPath = path.join(__dirname, '..', 'resources', 'audio', req.user._id.toString(), fileLoc, ext)
 
-        // Make the directory
-        fs.mkdir(tempPath, {recursive: true}, (err) => {
-            return res.status(400).json({'message': err})
-        })
-
-        // Save Song to database
         let tempSong = Song()
         tempSong.title = req.body.title
         tempSong.artists = req.body.artists
-        tempSong.path = (path.join(tempPath, ext, req.file.originalname))
-        //console.log(tempSong)
-        //console.log(tempPath)
+        tempSong.genres = req.body.genres
+        tempSong.path = path.join(tempPath, req.file.originalname)
+        await tempSong.save()
 
-        // Save Song to directory
-        fs.writeFile(path.join(tempPath, ext, req.file.originalname), req.file.buffer, (err) => {
-            if (err) {
-                console.log(err)
+        //console.log(tempSong)
+        //console.log(tempPath)        
+        //return res.status(200).json({'message': 'File written to path'})
+
+        //console.log(req.file)
+
+        await fs.mkdir(tempPath, {recursive: true}, async (err) => {
+            if (err != null) {
                 return res.status(400).json({'message': err})
             } else {
-                return res.status(200).json({'message': 'File written to path'})
+
+                await fs.writeFile(path.join(tempPath, req.file.originalname), req.file.buffer, (err) => {
+                    if (err) {
+                        console.log(err)
+                        return res.status(400).json({'message': err})
+                    } else {
+                        return res.status(200).json({'message': 'File written to path'})
+                    }
+                })
             }
         })
-        
-        //return res.status(200).json({'message': 'File written to path'})
+
     } catch (err) {
         console.log(err)
         return res.status(400).json({'message': err})
     }
+}
+
+const manageSong = async (req, res) => {
+
+}
+
+const deleteSong = async (req, res) => {
+
 }
 
 const get_audio = async (req, res) => {

@@ -8,7 +8,7 @@ var SongSchema = new mongoose.Schema({
         type: String
     },
     genres: {
-        type: String,
+        type: [String],
         enum: ['Rock', 'Pop', 'Electronic', 'Soundtrack', 'Hip-Hop', 'Classical', 'Metal', 'Other'],
         default: 'Other'
     },
