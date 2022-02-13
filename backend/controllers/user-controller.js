@@ -1,6 +1,7 @@
 const User = require('../models/user.js')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config.js')
+const req = require('express/lib/request')
 
 function createToken(user) {
 
@@ -43,8 +44,17 @@ const updateAccount = async (req, res) => {
     try {
         const userFind = await User.findOne({ email: req.user.email, username: req.user.username}) 
 
-        userFind.username = req.body.username
-        userFind.email = req.body.email
+        if (!req.body.username == false) {
+            if (req.body.username != userFind.username) {
+                userFind.username = req.body.username
+            }
+        }
+
+        if (!req.body.email == false) {
+            if (!req.body.email != userFind.email) {
+                userFind.email = req.body.email
+            }
+        }
 
         await userFind.save()
 
@@ -54,17 +64,21 @@ const updateAccount = async (req, res) => {
         })
 
     } catch (err) {
-        res.status(400).json(err)
+        return res.status(400).json(err)
     }
 }
 
 // Updates Password (Gets old password, compares and then updates to new password and hashes)
 const updatePassword = async (req, res) => {
 
+    if (!req.body.oldPassword || !req.body.newPassword) {
+        return res.status(400).json({'message': 'Please enter both password fields'})
+    }
+
     try {
 
         const userFind = await User.findOne({ email: req.user.email, username: req.user.username}) 
-
+        
         await userFind.comparePassword(req.body.oldPassword, async (err, isMatch) => {
 
             if (isMatch && !err) {
@@ -79,7 +93,7 @@ const updatePassword = async (req, res) => {
         })
 
     } catch (err) {
-        res.status(400).json(err)
+        return res.status(400).json(err)
     }
 }
 
@@ -104,7 +118,7 @@ const deleteAccount = async (req, res) => {
 
 
     } catch (err) {
-        res.status(400).json(err)
+        return res.status(400).json(err)
     }
 }
 

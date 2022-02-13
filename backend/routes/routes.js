@@ -31,5 +31,6 @@ router.get('/admin', passport.authenticate('jwt', {session: false}), adminContro
 // Song Controller
 router.get('/song', passport.authenticate('jwt', {session: false}), songController.get_audio)
 router.post('/song/add', passport.authenticate('jwt', {session: false}), upload.single('file'), songController.addSong)
+router.post('/song/update', passport.authenticate('jwt', {session: false}), songController.updateSong)
 
 module.exports = router

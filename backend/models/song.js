@@ -15,6 +15,10 @@ var SongSchema = new mongoose.Schema({
     path: {
         type: String,
         required: true
+    },
+    userId: {
+        type: String,
+        require: true
     }
 })
 
