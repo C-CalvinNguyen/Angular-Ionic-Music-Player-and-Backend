@@ -109,6 +109,47 @@ const updateSong = async (req, res) => {
 // Deletes Song From Database, & Local Storage, Takes Song ID and User ID For Authentication
 const deleteSong = async (req, res) => {
 
+    console.log(req.body)
+
+    if (!req.body.songId) {
+        return res.status(400).json(err)
+    }
+
+    try {
+
+        const songFind = await Song.findOne({_id: req.body.songId})
+
+        if (req.user._id.toString() != songFind.userId) {
+
+            return res.status(403).json({'message': 'Not Authorized, Wrong User'})
+            
+        } else {
+        
+
+            let tempPath = songFind.path.split(path.sep)
+            tempPath.pop()
+            tempPath.pop()
+            let pathString = tempPath.join(path.sep)
+            let deleteId = songFind._id.toString()
+
+            fs.rm(pathString, {recursive: true, force: true}, async (err) => {
+                if (err != null && !err == false) {
+                    console.log(err)
+                    return res.status(400).json({'message': err})
+                } else {
+                    console.log(err)
+                    await Song.deleteOne({_id: req.body.songId, userId: songFind.userId})
+                    return res.status(200).json({'message': 'Deleted'})
+                }
+            })
+        }
+
+
+    } catch (err) {
+        return res.status(400).json(err)
+    }
+
+
 }
 
 const get_audio = async (req, res) => {
@@ -174,5 +215,6 @@ app.get('/video', (req, res) => {
 module.exports = {
     get_audio,
     addSong,
-    updateSong
+    updateSong,
+    deleteSong
 }
