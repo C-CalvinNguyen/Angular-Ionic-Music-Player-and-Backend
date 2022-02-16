@@ -106,7 +106,7 @@ const updateSong = async (req, res) => {
 
 }
 
-// Deletes Song From Database, & Local Storage, Takes Song ID and User ID For Authentication
+// Deletes Song From Database, & Local Storage, Takes Song ID and User ID For Authentication, GET SONG ID ON REQ PARAM
 const deleteSong = async (req, res) => {
 
     console.log(req.body)
