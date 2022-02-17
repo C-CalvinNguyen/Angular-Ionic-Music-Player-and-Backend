@@ -18,12 +18,12 @@ var SongSchema = new mongoose.Schema({
     // 0-19 of the ID3 defined genres
     genre: {
         type: String,
-        enum: [
+        enum: {values: [
             'Blues', 'Classic Rock', 'Country', 'Dance',
             'Disco', 'Funk', 'Grunge', 'Hip-Hop',
             'Jazz', 'Metal', 'New Age', 'Oldies', 
             'Other', 'Pop', 'Rhythm and Blues', 'Rap', 
-            'Reggae', 'Rock', 'Techno,', 'Industrial'],
+            'Reggae', 'Rock', 'Techno,', 'Industrial'], message: 'Genre is not accepted'},
         default: 'Other'
     },
     
@@ -68,6 +68,12 @@ var SongSchema = new mongoose.Schema({
     userId: {
         type: String,
         require: [true, "Song uploader not entered."]
+    },
+
+    // Was tempfile WAV
+    isWav: {
+        type: Boolean,
+        default: false
     }
 })
 

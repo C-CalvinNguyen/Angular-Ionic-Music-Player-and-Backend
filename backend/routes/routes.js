@@ -15,6 +15,7 @@ router.get('/', (req, res) => {
 router.post('/register', authController.registerUser)
 router.post('/login', authController.loginUser)
 
+// TO DO - MIGRATE TO SPECIFIC ROUTES
 // Using middleware authentication, first argument is the strategy (JWT)
 
 // User Controller
@@ -26,7 +27,7 @@ router.delete('/account/delete', passport.authenticate('jwt', {session: false}),
 // Admin Controller
 router.get('/admin', passport.authenticate('jwt', {session: false}), adminController.adminManage)
 
-// Song routes
+// Song Routes
 router.use("/song", songRoutes)
 
 module.exports = router

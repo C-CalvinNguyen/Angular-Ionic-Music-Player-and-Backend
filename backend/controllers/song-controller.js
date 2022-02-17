@@ -3,69 +3,46 @@ const path = require('path')
 const Song = require('../models/song.js')
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
-const { resolve } = require('path');
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-function convert(file,  finalPath, name,format, bitrate) {
-    return new Promise(function( res, rej ) {
-
-    let filename = `${name}.${format}`
-
-    ffmpeg(file.path)
-    .toFormat(format)
-    .audioBitrate(bitrate)
-    .on('error', (err) => {
-        rej(err)
-    })
-    .on('end', () => {
-        res(`converted ${bitrate}`)
-    })
-    .save(path.join(finalPath, format ,bitrate, filename))
-    })
-}
-
-function makeSubDirMp3(finalPath) {
-
-    fs.mkdir(path.join(finalPath, 'mp3', '320'), {recursive: true}, (err) => {
-        if (err != null) {
-            console.log(err)
-        } 
-    })
-
-    fs.mkdir(path.join(finalPath, 'mp3', '256'), {recursive: true}, (err) => {
-        if (err != null) {
-            console.log(err)
-        } 
-    })
-
-    fs.mkdir(path.join(finalPath, 'mp3', '128'), {recursive: true}, (err) => {
-        if (err != null) {
-            console.log(err)
-        } 
-    })
-}
 
 /*
-function makeSubDirOgg(finalPath) {
-    
-    fs.mkdir(path.join(finalPath, 'ogg', '256'), {recursive: true}, (err) => {
-        if (err != null) {
-            console.log(err)
-        } 
-    })
-
-    fs.mkdir(path.join(finalPath, 'ogg', '128'), {recursive: true}, (err) => {
-        if (err != null) {
-            console.log(err)
-        } 
-    })
-
-}
+===============================================================================
+    Converts file in temp folder using ffmpeg
+        save converted file to finalPath/format/bitrate/
+===============================================================================
 */
+function convert(file, finalPath, title, format, bitrate) {
+    
+    return new Promise(function( res, rej ) {
+        
+        // new file name is ${title}.${format}
+        let filename = `${title}.${format}`
 
-function makeSubDirWav(finalPath) {
+        // Convert using ffmpeg to specific format & bitrate
+        ffmpeg(file.path)
+        .toFormat(format)
+        .audioBitrate(bitrate)
+        .on('error', (err) => {
+            rej(err)
+        })
+        .on('end', () => {
+            res(`converted ${bitrate}`)
+        })
+        .save(path.join(finalPath, format, bitrate, filename))
+    })
+}
 
-    fs.mkdir(path.join(finalPath, 'wav'), {recursive: true}, (err) => {
+
+/*
+===============================================================================
+    Makes sub directories 
+        for format (file extension type) & bitrate (320, 256, 128)
+===============================================================================
+*/
+function makeSubDir(finalPath, format, bitrate) {
+
+    fs.mkdir(path.join(finalPath, format, bitrate), {recursive: true}, (err) => {
         if (err != null) {
             console.log(err)
         } 
@@ -73,126 +50,283 @@ function makeSubDirWav(finalPath) {
 
 }
 
-function convertSong(file, ext, finalPath, filename) {
 
-    // if wav convert to mp3 -> ogg and copy file to wav subdir
+/*
+===============================================================================
+    Called when converting songs
+        wav -> ogg & mp3 (various bitrates)
+        mp3 -> mp3 (various bitrates)
+        ogg -> ogg (various bitrates)
+    Delete temp file after conversion
+===============================================================================
+*/
+function convertSong(file, ext, finalPath, title) {
+    return new Promise(function (res, rej) {
+        // If tempfile is WAV create subdirectories & convert (WAV, MP3, OGG)
     if (ext == "wav") {
         
-        // Move file to proper location
-        makeSubDirMp3(finalPath)
-        //makeSubDirOgg(finalPath)
-        makeSubDirWav(finalPath)
+        // make MP3 & OGG subdirectories
+        makeSubDir(finalPath, 'mp3', '320')
+        makeSubDir(finalPath, 'mp3', '256')
+        makeSubDir(finalPath, 'mp3', '128')
+        makeSubDir(finalPath, 'ogg', '256')
+        makeSubDir(finalPath, 'ogg', '128')
 
-        fs.copyFile(file.path, path.join(finalPath, ext, (filename+'.wav')), (err) => {
+        // make wav subdirectory and copy file into it
+        fs.mkdir(path.join(finalPath, 'wav'), {recursive: true}, (err) => {
+            if (err != null) {
+                console.log(err)
+            } else {
+                fs.copyFile(file.path, path.join(finalPath, ext, (title+'.wav')), (err) => {
+                    if (err != null) {
+                        console.log(err)
+                    }
+                })
+            }
+        })
+
+        // Convert temp file into formats, then delete file after conversion
+        Promise.all([
+            convert(file, finalPath, title, 'mp3', '320'),
+            convert(file, finalPath, title, 'mp3', '256'),
+            convert(file, finalPath, title, 'mp3', '128'),
+            convert(file, finalPath, title, 'ogg', '256'),
+            convert(file, finalPath, title, 'ogg', '128')
+        ])
+        .then(() => {
+            fs.unlink(file.path, (err) => {
+                if (err != null) {
+                    console.log(err)
+                } else {
+                    console.log('deleted temp file')
+                    res()
+                }
+            })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
+    // if tempfile is MP3 or OGG create subdirectories & convert (MP3, OGG)
+    if (ext == 'mp3' || ext == 'ogg') {
+
+        // make MP3 & OGG subdirectories
+        makeSubDir(finalPath, 'mp3', '320')
+        makeSubDir(finalPath, 'mp3', '256')
+        makeSubDir(finalPath, 'mp3', '128')
+        makeSubDir(finalPath, 'ogg', '256')
+        makeSubDir(finalPath, 'ogg', '128')
+        
+        // Convert temp file into formats, then delete file after conversion
+        Promise.all([
+            convert(file, finalPath, title, 'mp3', '320'),
+            convert(file, finalPath, title, 'mp3', '256'),
+            convert(file, finalPath, title, 'mp3', '128'),
+            convert(file, finalPath, title, 'ogg', '256'),
+            convert(file, finalPath, title, 'ogg', '128')
+        ])
+        .then(() => {
+            fs.unlink(file.path, (err) => {
+                if (err != null) {
+                    console.log(err)
+                } else {
+                    console.log('deleted temp file')
+                    res()
+                }
+            })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+    })
+}
+
+
+/*
+===============================================================================
+    Called when adding a song (Multipart/FormData Using Multer)
+===============================================================================
+*/
+const addSong = async (req, res) => {
+
+    // Checks if file was uploaded
+    if (!req.file){
+        return res.status(400).json({Error: 'No file selected'})
+    }
+
+    // Checks if user did not input title (deletes temp file if false)
+    if (!req.body.title) {
+        fs.unlink(req.file.path, (err) => {})
+        return res.status(400).json({Error: 'Please enter a title'})
+    }
+
+    // Create new path string, resources/audio/{USERID}/{title}
+    let finalPath = path.join(__dirname, '..', 'resources', 'audio', req.user._id.toString(), req.body.title)
+
+    // Checks if the user already used the title (delete temp file if false)
+    if (fs.existsSync(finalPath)) {
+        fs.unlink(req.file.path, (err) => {})
+        return res.status(400).json({Error: 'You already uploaded a song with that title'})
+    }
+
+    // get file extension (wav || mp3 || ogg)
+    let ext = req.file.originalname.split('.').pop()
+    
+    // Create song object and save to database
+    let tempSong = Song()
+    tempSong.title = req.body.title             // sets req.body.title as title
+    tempSong.artist = req.body.artist           // defaults to "No Artist" if user did not enter one
+    tempSong.genre = req.body.genre             // defaults to "Other" if user did not enter one
+    tempSong.audioPath = finalPath              // sets finalPath as audioPath
+    tempSong.userId = req.user._id.toString()   // sets song uploader user id
+    
+    if (ext == 'wav') {
+        tempSong.isWav = true
+    } else {
+        tempSong.isWav = false
+    }
+
+    // save song to database
+    await tempSong.save((err) => {
+        if (err) {
+            return res.status(400).json(err.message)
+        } else {
+
+            /*
+                Make file directory for song using finalPath
+                once directory is created call convertSong()
+            */
+            fs.mkdir(finalPath, {recursive: true}, (err) => {
+                if (err != null) {
+                    return res.status(400).json({'message': err})
+                } else {
+                    return Promise.all([convertSong(req.file, ext, finalPath, req.body.title)])
+                    .then(() => {
+                        // return response with success message once conversion is complete
+                        return res.status(200).json({'message': 'content uploaded and converted', 'songId': tempSong._id.toString()})
+                    })
+                }
+            })
+        }
+    })  
+}
+
+
+function rename(newPath, oldTitle, newTitle, format, bitrate) {
+
+    let oPath = path.join(newPath, format, bitrate, `${oldTitle}.${format}`)
+    let nPath = path.join(newPath, format, bitrate, `${newTitle}.${format}`)
+
+    fs.rename(oPath, nPath, (err) => {
+        if (err != null) {
+            console.log(err)
+        }
+    })
+
+}
+
+function renameFiles(isWav, newPath, oldTitle, newTitle) {
+
+    if (isWav == true) {
+        rename(newPath, oldTitle, newTitle, 'mp3', '320')
+        rename(newPath, oldTitle, newTitle, 'mp3', '256')
+        rename(newPath, oldTitle, newTitle, 'mp3', '128')
+        rename(newPath, oldTitle, newTitle, 'ogg', '256')
+        rename(newPath, oldTitle, newTitle, 'ogg', '128')
+
+        fs.rename(path.join(newPath, 'wav', `${oldTitle}.wav`), path.join(newPath, 'wav', `${newTitle}.wav`), (err) => {
             if (err != null) {
                 console.log(err)
             }
         })
 
-        Promise.all([
-            convert(file, finalPath, filename, 'mp3', '320'),
-            convert(file, finalPath, filename, 'mp3', '256'),
-            convert(file, finalPath, filename, 'mp3', '128')
-        ]).then(() => {
-            fs.unlink(file.path, (err) => {
-                if (err != null) {
-                    console.log(err)
-                } else {
-                    console.log('deleted temp file')
-                }
-            })
-        })
-        .catch(err => {
-            console.log(err)
-        })
+    } else {
+        rename(newPath, oldTitle, newTitle, 'mp3', '320')
+        rename(newPath, oldTitle, newTitle, 'mp3', '256')
+        rename(newPath, oldTitle, newTitle, 'mp3', '128')
+        rename(newPath, oldTitle, newTitle, 'ogg', '256')
+        rename(newPath, oldTitle, newTitle, 'ogg', '128')
     }
-
-    // if mp3 create mp3 subfolders and convert
-    if (ext == 'mp3') {
-        makeSubDirMp3(finalPath)
-        
-        Promise.all([
-        convert(file, finalPath, filename, 'mp3', '320'),
-        convert(file, finalPath, filename, 'mp3', '256'),
-        convert(file, finalPath, filename, 'mp3', '128')
-        ]).then(() => {
-            fs.unlink(file.path, (err) => {
-                if (err != null) {
-                    console.log(err)
-                } else {
-                    console.log('deleted temp file')
-                }
-            })
-        })
-        .catch(err => {
-            console.log(err)
-        })
-    }
-
-    /*
-    if (ext == 'ogg') {
-        makeSubDirOgg(finalPath)
-    }
-    */
 }
 
-// Called when Adding A Song (Multipart/FormData Using Multer)
-const addSong = async (req, res) => {
 
-    let fileArray = req.file.originalname.split('.')
-    let ext = fileArray.pop()
-
-    let finalPath = path.join(__dirname, '..', 'resources', 'audio', req.user._id.toString(), req.body.title)
-    
-    let tempSong = Song()
-    tempSong.title = req.body.title
-    tempSong.artists = req.body.artists
-    tempSong.genres = req.body.genres
-    tempSong.audioPath = finalPath
-    tempSong.userId = req.user._id.toString()
-    await tempSong.save()
-
-    fs.mkdir(finalPath, {recursive: true}, (err) => {
-        if (err != null) {
-            return res.status(400).json({'message': err})
-        } else {
-            convertSong(req.file, ext, finalPath, req.body.title)
-        }
-    })
-
-    return res.status(200).json({'message': 'directory created'})
-}
-
-// Updates Title, Artists, and Genres TO DO: GET Song id based on req param
-const updateSong = async (req, res) => {
+/*
+===============================================================================
+    Called when updating a song (gets songid from param)
+        updates title, artists & genres
+        updates subdirectories if title is changed and audioPath
+        updates database info
+===============================================================================
+*/
+const editSong = async (req, res) => {
 
     try {
 
-        const songFind = await Song.findOne({_id: req.body.songId})
+        /*
+            Finds song by req.params.id
+            if req.params.id is not in the proper format for ObjectID (CASTERROR) return null
+        */
+        const songFind = await Song.findOne({_id: req.params.id})
+        .catch((err) => {
+            return null
+        })
+
         console.log(songFind)
 
-        // Checks if user id in the song matches the user id from request
+        // Checks if song was found
+        if (!songFind) {
+            return res.status(400).json({Error: 'Song with that ID does not exist'})
+        }
+
+        // Checks if user id in the song matches the user id from token
         if (req.user._id.toString() != songFind.userId) {
 
             return res.status(403).json({'message': 'Not Authorized, Wrong User'})
             
         } else {
 
+            // Update Subdirectories if title is changed
             if (!req.body.title == false) {
-                if (req.body.title != songFind.title) {
-                    songFind.title = req.body.title
+
+                // if req.body.title exists and is the same as current title, do not change anything
+                if (req.body.title == songFind.title) {
+
+                } else {
+                    let newPath = path.join(__dirname, '..', 'resources', 'audio', req.user._id.toString(), req.body.title)
+
+                    if (fs.existsSync(newPath)) {
+                        return res.status(400).json({Error: 'Cannot change to that title, you already uploaded a song with that title'})
+
+                    } else {
+                        let oldPath = songFind.audioPath
+                        let oldTitle = songFind.title
+                        let newTitle = req.body.title
+                        songFind.audioPath = newPath
+                        songFind.title = req.body.title
+
+                        fs.rename(oldPath, newPath, (err) => {
+                            if (err != null) {
+                                console.log(err)
+                            } else {
+
+                                renameFiles(songFind.isWav, newPath, oldTitle, newTitle)
+                            }
+                        })
+                    }
                 }
             }
     
-            if (!req.body.artists == false) {
-                if (req.body.artists != songFind.artists) {
-                    songFind.artists = req.body.artists
+            if (!req.body.artist == false) {
+                if (req.body.artist != songFind.artist) {
+                    songFind.artist = req.body.artist
                 }
             }
     
-            if (!req.body.genres == false) {
-                if (req.body.genres != songFind.genres) {
-                    songFind.genres = req.body.genres
+            if (!req.body.genre == false) {
+                if (req.body.genre != songFind.genre) {
+                    songFind.genre = req.body.genre
                 }
             }
     
@@ -208,44 +342,51 @@ const updateSong = async (req, res) => {
 
 }
 
-// Deletes Song From Database, & Local Storage, Takes Song ID and User ID For Authentication, GET SONG ID ON REQ PARAM
+
+/*
+===============================================================================
+    Called when deleting a song (gets songid from param)
+        finds song from DB using Song.findOne with req.params.id
+        if found deletes all files in audioPath
+        if found deletes from DB
+===============================================================================
+*/
 const deleteSong = async (req, res) => {
-
-    console.log(req.body)
-
-    if (!req.body.songId) {
-        return res.status(400).json(err)
-    }
 
     try {
 
-        const songFind = await Song.findOne({_id: req.body.songId})
+        /*
+            Finds song by req.params.id
+            if req.params.id is not in the proper format for ObjectID (CASTERROR) return null
+        */
+        const songFind = await Song.findOne({_id: req.params.id})
+        .catch((err) => {
+            return null
+        })
 
+        // Checks if song was found
+        if (!songFind) {
+            return res.status(400).json({Error: 'Song with that ID does not exist'})
+        }
+
+        // Checks if user id in the song matches the user id from token
         if (req.user._id.toString() != songFind.userId) {
 
             return res.status(403).json({'message': 'Not Authorized, Wrong User'})
             
         } else {
-        
 
-            let tempPath = songFind.path.split(path.sep)
-            tempPath.pop()
-            tempPath.pop()
-            let pathString = tempPath.join(path.sep)
-            let deleteId = songFind._id.toString()
-
-            fs.rm(pathString, {recursive: true, force: true}, async (err) => {
+            // removes files in audioPath and then deletes song from db
+            fs.rm(songFind.audioPath, {recursive: true, force: true}, async (err) => {
                 if (err != null && !err == false) {
                     console.log(err)
                     return res.status(400).json({'message': err})
                 } else {
-                    console.log(err)
-                    await Song.deleteOne({_id: req.body.songId, userId: songFind.userId})
+                    await Song.deleteOne({_id: req.params.id, userId: songFind.userId})
                     return res.status(200).json({'message': 'Deleted'})
                 }
             })
         }
-
 
     } catch (err) {
         return res.status(400).json(err)
@@ -255,8 +396,8 @@ const deleteSong = async (req, res) => {
 }
 
 // TO DO Check if query id, format and bitrate is in place
-const get_audio = async (req, res) => {
-
+// (SPECIFY ONLY WAV / MP3 / OGG) (SPECIFY BITRATES ONLY 320 / 256 / 128)
+const stream_audio = async (req, res) => {
 
     let songId = req.query.s.toString()
     let format = ''
@@ -273,6 +414,9 @@ const get_audio = async (req, res) => {
     }
 
     const songFind = await Song.findOne({_id: songId})
+
+    console.log(songFind)
+
     let songPath = ''
 
     let filename = `${songFind.title}.${format}`
@@ -283,6 +427,8 @@ const get_audio = async (req, res) => {
     } else {
         songPath = path.join(songFind.audioPath, format, bitrate, filename)
     }
+
+    console.log(songPath)
 
     const range = req.headers.range
     //const songPath = path.join(songFind.audioPath, format, bitrate, filename)
@@ -312,6 +458,11 @@ const get_audio = async (req, res) => {
     const stream = fs.createReadStream(songPath, {start, end})
     stream.pipe(res)
 
+}
+
+const getSong = async (req, res) => {
+    const songFind = await Song.findOne({_id: req.body.id})
+    return res.send(JSON.stringify(songFind))
 }
 
 /*
@@ -344,8 +495,9 @@ app.get('/video', (req, res) => {
 */
 
 module.exports = {
-    get_audio,
+    getSong,
+    stream_audio,
     addSong,
-    updateSong,
+    editSong,
     deleteSong
 }
