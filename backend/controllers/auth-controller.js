@@ -67,6 +67,10 @@ const loginUser = async (req, res) => {
             return res.status(400).json({'message': 'User does not exist'})
         }
 
+        if (user.status != 'ACTIVE') {
+            return res.status(400).json({Error: 'User is banned'})
+        }
+
         // Using the comparePassword function in the user model
         // Check if password in request matches database
         await user.comparePassword(req.body.password, (err, isMatch) => {

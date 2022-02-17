@@ -41,7 +41,7 @@ let jwtStrategy = new JwtStrategy(options, function (jwt_payload, done) {
         if (err) {
             return done(err, false);
         }
-        if (user) {
+        if (user && user.status == 'ACTIVE') {
             return done(null, user);
         } else {
             return done(null, false);
