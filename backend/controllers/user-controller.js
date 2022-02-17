@@ -39,6 +39,7 @@ const account = async (req, res) => {
 }
 
 // Updates Username & Email
+// POSSIBLE TO DO: EDIT await userFind.save() to check if value is not unique and send error response
 const updateAccount = async (req, res) => {
     
     try {
