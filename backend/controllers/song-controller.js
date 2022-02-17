@@ -215,6 +215,12 @@ const addSong = async (req, res) => {
 }
 
 
+/*
+===============================================================================
+    renames file
+        renames file to newPath/format/bitrate/newTitle.format
+===============================================================================
+*/
 function rename(newPath, oldTitle, newTitle, format, bitrate) {
 
     let oPath = path.join(newPath, format, bitrate, `${oldTitle}.${format}`)
@@ -228,28 +234,29 @@ function rename(newPath, oldTitle, newTitle, format, bitrate) {
 
 }
 
+
+/*
+===============================================================================
+    Called when renaming files in subdirectory
+        renames all mp3, ogg and wav files with newTitle
+        checks if song contains wav
+===============================================================================
+*/
 function renameFiles(isWav, newPath, oldTitle, newTitle) {
 
     if (isWav == true) {
-        rename(newPath, oldTitle, newTitle, 'mp3', '320')
-        rename(newPath, oldTitle, newTitle, 'mp3', '256')
-        rename(newPath, oldTitle, newTitle, 'mp3', '128')
-        rename(newPath, oldTitle, newTitle, 'ogg', '256')
-        rename(newPath, oldTitle, newTitle, 'ogg', '128')
-
         fs.rename(path.join(newPath, 'wav', `${oldTitle}.wav`), path.join(newPath, 'wav', `${newTitle}.wav`), (err) => {
             if (err != null) {
                 console.log(err)
             }
         })
+    }
 
-    } else {
         rename(newPath, oldTitle, newTitle, 'mp3', '320')
         rename(newPath, oldTitle, newTitle, 'mp3', '256')
         rename(newPath, oldTitle, newTitle, 'mp3', '128')
         rename(newPath, oldTitle, newTitle, 'ogg', '256')
         rename(newPath, oldTitle, newTitle, 'ogg', '128')
-    }
 }
 
 
@@ -398,30 +405,57 @@ const deleteSong = async (req, res) => {
 
 // TO DO Check if query id, format and bitrate is in place
 // (SPECIFY ONLY WAV / MP3 / OGG) (SPECIFY BITRATES ONLY 320 / 256 / 128)
+/*
+===============================================================================
+    Called when to stream a song file
+        gets song info by song ID
+            if song does not exist send error response
+        gets bitrate by query
+            if bitrate is not supported send error (if wrong bitrate is given default to 128)
+        gets format by query
+            if format is not supported send error (if wrong format is given default to mp3)
+===============================================================================
+*/
 const stream_audio = async (req, res) => {
 
     let songId = req.query.s.toString()
+
+    // Checks if req.query.f (format) was given and check if it was a proper argument
+    // Defaults if false
     let format = ''
-    if (!req.query.form) {
-        format = 'mp3'
+    if (!req.query.f) {
     } else {
-        format = req.query.form.toString()
+        if (req.query.f != 'mp3' && req.query.f != 'wav' && req.query.f != 'ogg') {
+            format = 'mp3'
+        } else {
+            format = req.query.f.toString()
+        }
     }
+
+    // Checks if req.query.b (bitrate) was given and checks if it was a proper argument
+    // Defaults if false
     let bitrate = ''
-    if (!req.query.bit) {
-        bitrate = '128'
+    if (!req.query.b) {
     } else {
-        bitrate = req.query.bit.toString()
+        if (req.query.b != '320' && req.query.b != '256' && req.query.b != '128') {
+            bitrate = '128'
+        } else {
+            bitrate = req.query.b.toString()
+        }
     }
 
     const songFind = await Song.findOne({_id: songId})
+    .catch(err => {
+        return null
+    }) 
 
-    console.log(songFind)
+    if (!songFind) {
+        return res.status(400).json({Error: "Song with that ID does not exist"})
+    }
 
     let songPath = ''
 
     let filename = `${songFind.title}.${format}`
-    //console.log(path.join(songFind.audioPath, format, bitrate, filename))
 
     if (format == 'wav') {
         songPath = path.join(songFind.audioPath, format, filename)
@@ -431,69 +465,44 @@ const stream_audio = async (req, res) => {
 
     console.log(songPath)
 
-    const range = req.headers.range
-    //const songPath = path.join(songFind.audioPath, format, bitrate, filename)
-    //const songPath = '../resources/audio/1/PerituneMaterial_Harvest6_loop.mp3'
-    const songSize = fs.statSync(songPath).size
+    if (fs.existsSync(songPath)) {
 
-    const chunkSize = 1 * 1e+6
-    //const chunkSize = 5.12 * 1e+5 // 512kbps
-    const start = Number(range.replace(/\D/g, ''))
-    const end = Math.min(start + chunkSize, songSize - 1)
+        const range = req.headers.range
+        const songSize = fs.statSync(songPath).size
 
-    const contentLength = end - start + 1
-    
-    console.log("range: " + range + ", contentLength: ", + contentLength)
+        const chunkSize = 1 * 1e+6      // 1MB
+        //const chunkSize = 5.12 * 1e+5 // 512kbps
+        const start = Number(range.replace(/\D/g, ''))
+        const end = Math.min(start + chunkSize, songSize - 1)
 
-    const headers = {
-        "Content-Range": `bytes ${start} - ${end}/${songSize}`,
-        "Accept-Ranges": 'bytes',
-        "Content-Length": contentLength,
-        "Content-Type": `audio/${format}`
+        const contentLength = end - start + 1
+        
+        console.log("range: " + range + ", contentLength: ", + contentLength)
+
+        const headers = {
+            "Content-Range": `bytes ${start} - ${end}/${songSize}`,
+            "Accept-Ranges": 'bytes',
+            "Content-Length": contentLength,
+            "Content-Type": `audio/${format}`
+        }
+        
+        console.log(headers)
+
+        res.writeHead(206, headers)
+
+        const stream = fs.createReadStream(songPath, {start, end})
+        stream.pipe(res)
+        
+    } else {
+        return res.status(400).json({Error: 'Song does not support that format'})
     }
-    
-    console.log(headers)
-
-    res.writeHead(206, headers)
-
-    const stream = fs.createReadStream(songPath, {start, end})
-    stream.pipe(res)
-
 }
 
+// TO DO: RETURN SONG INFO FROM DATABASE
 const getSong = async (req, res) => {
     const songFind = await Song.findOne({_id: req.body.id})
     return res.send(JSON.stringify(songFind))
 }
-
-/*
-// Temporary Code Example Given
-
-app.get('/video', (req, res) => {
-    
-    const range = req.headers.range
-    const videoPath = './resources/video/20171215_209724174_Creative.mp4'
-    const videoSize = fs.statSync(videoPath).size
-
-    const chunkSize = 1 * 1e+6
-    const start = Number(range.replace(/\D/g, ''))
-    const end = Math.min(start + chunkSize, videoSize - 1)
-
-    const contentLength = end - start + 1
-    
-    const headers = {
-        "Content-Range": `bytes ${start} - ${end}/${videoSize}`,
-        "Accet-Ranges": 'bytes',
-        "Content-Length": contentLength,
-        "Content-Type": 'video/mp4'
-    }
-    res.writeHead(206, headers)
-
-    const stream = fs.createReadStream(videoPath, {start, end})
-    stream.pipe(res)
-
-})
-*/
 
 module.exports = {
     getSong,
