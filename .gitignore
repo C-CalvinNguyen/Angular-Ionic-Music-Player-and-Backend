@@ -1,5 +1,3 @@
 /backend/node_modules
 /backend/assets
 config_info.txt
-/backend/resources/audio/*
-/backend/resources/temp/*
