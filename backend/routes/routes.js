@@ -37,8 +37,14 @@ router.post('/song/update', passport.authenticate('jwt', {session: false}), song
 router.delete('/song/delete', passport.authenticate('jwt', {session: false}), songController.deleteSong)
 
 // Playlist Controller
+
+// Get Playlist Given Playlist ID
 router.get('/playlist', passport.authenticate('jwt', {session: false}), playlistController.getPlaylist)
+
+// Add Playlist, Requires title, description, list (array of strings with songId)
 router.post('/playlist/add', passport.authenticate('jwt', {session: false}), playlistController.addPlaylist)
+
+// Adds a Song to the Playlist, requires songId
 router.post('/playlist/add/song', passport.authenticate('jwt', {session: false}), playlistController.addSongPlaylist)
 router.put('/playlist/edit', passport.authenticate('jwt', {session: false}), playlistController.editPlaylist)
 router.put('/playlist/delete/song', passport.authenticate('jwt', {session: false}), playlistController.removeSongPlaylist)
@@ -46,9 +52,17 @@ router.delete('/playlist/add/delete', passport.authenticate('jwt', {session: fal
 
 
 // Rating Controller
-router.get('/ratings', passport.authenticate('jwt', {session: false}), ratingController.getAllRating)
-router.get('/rating', passport.authenticate('jwt', {session: false}), ratingController.getRating)
+
+// Requires SongId, Gets all ratings for that song
+router.get('/ratings', passport.authenticate('jwt', {session: false}), ratingController.getAllRatingBySong)
+
+// Requires SongId, Gets rating that user has uploaded (IF THEY DID, IF NOT EMPTY RETURN)
+router.get('/rating', passport.authenticate('jwt', {session: false}), ratingController.getRatingBySongAndUser)
+
+// Requires SongId, and score
 router.post('/rating/add', passport.authenticate('jwt', {session: false}), ratingController.addRating)
+
+// Requires RatingId
 router.delete('/rating/delete', passport.authenticate('jwt', {session: false}), ratingController.deleteRating)
 
 

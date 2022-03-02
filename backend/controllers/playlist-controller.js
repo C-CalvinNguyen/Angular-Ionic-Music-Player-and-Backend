@@ -12,12 +12,12 @@ const addPlaylist = async(req, res) => {
     try {
         //TODO add Thumbnail either url link or mongodb storage
         // Create Playlist For DB
-        let tempPLaylist = Playlist()
-        tempPLaylist.title = req.body.title
-        tempPLaylist.description = req.body.description
+        let tempPlaylist = Playlist()
+        tempPlaylist.title = req.body.title
+        tempPlaylist.description = req.body.description
         tempPlaylist.userId = req.user._id.toString()
-        tempPLaylist.list = req.body.list
-        await tempSong.save()
+        tempPlaylist.list = req.body.list
+        await tempPlaylist.save()
         return res.status(200).send("Playlist successfully added")
     } catch (err) {
         console.log(err)
