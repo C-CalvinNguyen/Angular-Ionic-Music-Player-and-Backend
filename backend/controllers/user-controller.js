@@ -61,7 +61,8 @@ const updateAccount = async (req, res) => {
 
         return res.status(200).json({
             "message": "User Updated",
-            token: createToken(userFind)
+            token: createToken(userFind), 
+            userFind
         })
 
     } catch (err) {
@@ -86,7 +87,7 @@ const updatePassword = async (req, res) => {
 
                 userFind.password = req.body.newPassword
                 await userFind.save()
-                return res.status(200).json({ "message": "Password Updated", token: createToken(userFind)})
+                return res.status(200).json({ "message": "Password Updated", token: createToken(userFind), userFind})
             } else {
                 return res.status(400).json({'message': 'Password does not match.', 'error': err})
             }

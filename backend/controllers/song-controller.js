@@ -340,7 +340,7 @@ const editSong = async (req, res) => {
     
             await songFind.save()
     
-            return res.status(200).json({'message': 'Song Updated'})
+            return res.status(200).json({'message': 'Song Updated', songFind})
 
         }
 
