@@ -512,10 +512,62 @@ const getSong = async (req, res) => {
     return res.send(songFind)
 }
 
+// SEARCHES
+// Search by Genre
+const searchGenre = async (req, res) => {
+    
+    try {
+        
+        const songsFind = await Song.find({genre: req.query.genre})
+
+        return res.status(200).json({'message': 'retrieved songs', songsFind})
+
+
+    } catch (err) {
+        return res.status(400).json({Error: err})
+    }
+}
+
+// Search By Artist
+const searchArtist = async (req, res) => {
+
+    try {
+
+        let rx = new RegExp(req.query.artist, 'i')
+
+        const songsFind = await Song.find({artist: {$regex: rx}})
+
+        return res.status(200).json({'message': 'retrieved songs', songsFind})
+        
+    } catch (err) {
+        return res.status(400).json({Error: err})
+    }
+}
+
+// Search By Title
+const searchTitle = async (req, res) => {
+
+    try {
+
+        let rx = new RegExp(req.query.title, 'i')
+
+        const songsFind = await Song.find({title: {$regex: rx}})
+
+        return res.status(200).json({'message': 'retrieved songs', songsFind})
+        
+    } catch (err) {
+        return res.status(400).json({Error: err})
+    }
+
+}
+
 module.exports = {
     getSong,
     stream_audio,
     addSong,
     editSong,
-    deleteSong
+    deleteSong,
+    searchGenre,
+    searchArtist,
+    searchTitle
 }

@@ -57,6 +57,9 @@ const upload = multer({
 // GET
 router.get('/stream', passport.authenticate('jwt', {session: false}), songController.stream_audio)
 router.get('/get', songController.getSong)
+router.get('/search/genre', passport.authenticate('jwt', {session: false}), songController.searchGenre)
+router.get('/search/artist', passport.authenticate('jwt', {session: false}), songController.searchArtist)
+router.get('/search/title', passport.authenticate('jwt', {session: false}), songController.searchTitle)
 
 // POST
 router.post('/add', 

@@ -23,7 +23,7 @@ var SongSchema = new mongoose.Schema({
             'Disco', 'Funk', 'Grunge', 'Hip-Hop',
             'Jazz', 'Metal', 'New Age', 'Oldies', 
             'Other', 'Pop', 'Rhythm and Blues', 'Rap', 
-            'Reggae', 'Rock', 'Techno,', 'Industrial'], message: 'Genre is not accepted'},
+            'Reggae', 'Rock', 'Techno', 'Industrial'], message: 'Genre is not accepted'},
         default: 'Other'
     },
     
