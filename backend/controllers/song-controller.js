@@ -405,7 +405,7 @@ const deleteSong = async (req, res) => {
 
 const incrementPlay = async (songFind) => {
     songFind.plays = songFind.plays + 1
-    songFind.save()
+    await songFind.save()
 }
 
 // TO DO Check if query id, format and bitrate is in place
