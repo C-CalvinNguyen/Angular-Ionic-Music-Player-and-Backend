@@ -59,7 +59,30 @@ const adminDeleteSong = async (req, res) => {
 }
 
 const adminUserStatus = async (req, res) => {
+    
+    try {
 
+        if (!req.body.status || !req.body.userId) {
+            return res.status(400).json({Error: 'Please enter a status and userId'})
+        }
+
+        if (req.user.role != 'admin') {
+            return res.status(403).json({'message': 'User does not have permissions.'})
+        }
+
+        const userFind = await User.findOne({_id: req.body.userId})
+
+        if (!userFind) {
+            return res.status(400).json({Error: 'User with that ID does not exist'})
+        }
+
+        userFind.status = req.body.status
+        await userFind.save()
+        return res.status(200).json({'message': "user updated", userFind})
+
+    } catch (err) {
+        return res.status(400).json(err)
+    }
 }
 
 
