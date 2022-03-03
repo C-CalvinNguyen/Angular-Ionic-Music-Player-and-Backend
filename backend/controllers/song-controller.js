@@ -403,6 +403,11 @@ const deleteSong = async (req, res) => {
 
 }
 
+const incrementPlay = async (songFind) => {
+    songFind.plays = songFind.plays + 1
+    songFind.save()
+}
+
 // TO DO Check if query id, format and bitrate is in place
 // (SPECIFY ONLY WAV / MP3 / OGG) (SPECIFY BITRATES ONLY 320 / 256 / 128)
 /*
@@ -453,6 +458,8 @@ const stream_audio = async (req, res) => {
         return res.status(400).json({Error: "Song with that ID does not exist"})
     }
 
+    incrementPlay(songFind)
+
     let songPath = ''
 
     let filename = `${songFind.title}.${format}`
@@ -466,6 +473,7 @@ const stream_audio = async (req, res) => {
     console.log(songPath)
 
     if (fs.existsSync(songPath)) {
+        
 
         const range = req.headers.range
         const songSize = fs.statSync(songPath).size
@@ -501,7 +509,7 @@ const stream_audio = async (req, res) => {
 // TO DO: RETURN SONG INFO FROM DATABASE
 const getSong = async (req, res) => {
     const songFind = await Song.findOne({_id: req.body.id})
-    return res.send(JSON.stringify(songFind))
+    return res.send(songFind)
 }
 
 module.exports = {
