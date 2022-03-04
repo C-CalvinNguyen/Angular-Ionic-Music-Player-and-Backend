@@ -178,6 +178,7 @@ const addSong = async (req, res) => {
     let tempSong = Song()
     tempSong.title = req.body.title             // sets req.body.title as title
     tempSong.artist = req.body.artist           // defaults to "No Artist" if user did not enter one
+    tempSong.lyrics = req.body.lyrics           // sets req,body.lyrics as lyrics (max is 1 million characters)
     tempSong.genre = req.body.genre             // defaults to "Other" if user did not enter one
     tempSong.audioPath = finalPath              // sets finalPath as audioPath
     tempSong.userId = req.user._id.toString()   // sets song uploader user id
@@ -263,7 +264,7 @@ function renameFiles(isWav, newPath, oldTitle, newTitle) {
 /*
 ===============================================================================
     Called when updating a song (gets songid from param)
-        updates title, artists & genres
+        updates title, artists, genres and lyrics
         updates subdirectories if title is changed and audioPath
         updates database info
 ===============================================================================
@@ -337,11 +338,20 @@ const editSong = async (req, res) => {
                     songFind.genre = req.body.genre
                 }
             }
-    
-            await songFind.save()
-    
-            return res.status(200).json({'message': 'Song Updated', songFind})
 
+            if (!req.body.lyrics == false) {
+                if (req.body.lyrics != songFind.lyrics) {
+                    songFind.lyrics = req.body.lyrics
+                }
+            }
+    
+            await songFind.save((err) => {
+                if (err) {
+                    return res.status(400).json(err.message)
+                } else {
+                    return res.status(200).json({'message': 'Song Updated', songFind})
+                }
+            })
         }
 
     } catch (err) {

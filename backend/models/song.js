@@ -74,6 +74,11 @@ var SongSchema = new mongoose.Schema({
     isWav: {
         type: Boolean,
         default: false
+    },
+
+    lyrics: {
+        type: String,
+        maxLength: 1000000
     }
 })
 
