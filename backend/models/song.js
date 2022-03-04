@@ -79,6 +79,11 @@ var SongSchema = new mongoose.Schema({
     lyrics: {
         type: String,
         maxLength: 1000000
+    },
+
+    imagePath: {
+        type: String,
+        required: [true, "Image path not entered"]
     }
 })
 

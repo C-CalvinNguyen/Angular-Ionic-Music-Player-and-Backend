@@ -152,13 +152,17 @@ function convertSong(file, ext, finalPath, title) {
 const addSong = async (req, res) => {
 
     // Checks if file was uploaded
-    if (!req.file){
-        return res.status(400).json({Error: 'No file selected'})
+    if (!req.files['audio'] || !req.files['image']){
+        return res.status(400).json({Error: 'No audio or image selected'})
     }
+
+    let audioFile = req.files['audio'][0]
+    let imageFile = req.files['image'][0]
 
     // Checks if user did not input title (deletes temp file if false)
     if (!req.body.title) {
-        fs.unlink(req.file.path, (err) => {})
+        fs.unlink(audioFile.path, (err) => {})
+        fs.unlink(imageFile.path, (err) => {})
         return res.status(400).json({Error: 'Please enter a title'})
     }
 
@@ -167,12 +171,14 @@ const addSong = async (req, res) => {
 
     // Checks if the user already used the title (delete temp file if false)
     if (fs.existsSync(finalPath)) {
-        fs.unlink(req.file.path, (err) => {})
+        fs.unlink(audioFile.path, (err) => {})
+        fs.unlink(imageFile.path, (err) => {})
         return res.status(400).json({Error: 'You already uploaded a song with that title'})
     }
 
     // get file extension (wav || mp3 || ogg)
-    let ext = req.file.originalname.split('.').pop()
+    let ext = audioFile.originalname.split('.').pop()
+    let imageExt = imageFile.originalname.split('.').pop()
     
     // Create song object and save to database
     let tempSong = Song()
@@ -181,6 +187,7 @@ const addSong = async (req, res) => {
     tempSong.lyrics = req.body.lyrics           // sets req,body.lyrics as lyrics (max is 1 million characters)
     tempSong.genre = req.body.genre             // defaults to "Other" if user did not enter one
     tempSong.audioPath = finalPath              // sets finalPath as audioPath
+    tempSong.imagePath = path.join(finalPath, (`${req.body.title}.${imageExt}`))
     tempSong.userId = req.user._id.toString()   // sets song uploader user id
     
     if (ext == 'wav') {
@@ -203,7 +210,17 @@ const addSong = async (req, res) => {
                 if (err != null) {
                     return res.status(400).json({'message': err})
                 } else {
-                    return Promise.all([convertSong(req.file, ext, finalPath, req.body.title)])
+
+                    // copy temp image into final path
+                    fs.copyFile(imageFile.path, path.join(finalPath, (`${req.body.title}.${imageExt}`)), (err) => {
+                        if (err != null) {
+                            console.log(err)
+                        } else {
+                            fs.unlink(imageFile.path, (err) => {})
+                        }
+                    })
+
+                    return Promise.all([convertSong(audioFile, ext, finalPath, req.body.title)])
                     .then(() => {
                         // return response with success message once conversion is complete
                         return res.status(200).json({'message': 'content uploaded and converted', 'songId': tempSong._id.toString()})
@@ -522,6 +539,15 @@ const getSong = async (req, res) => {
     return res.send(songFind)
 }
 
+/* 
+TO DO: RETURN SONG IMAGE
+WORKS ATM, MIGHT CHANGE HOW IT WORKS LATER
+*/
+const getSongImage = async (req, res) => {
+    const songFind = await Song.findOne({_id: req.query.id})
+    return res.sendFile(songFind.imagePath)
+}
+
 // SEARCHES
 // Search by Genre
 const searchGenre = async (req, res) => {
@@ -579,5 +605,6 @@ module.exports = {
     deleteSong,
     searchGenre,
     searchArtist,
-    searchTitle
+    searchTitle,
+    getSongImage
 }
