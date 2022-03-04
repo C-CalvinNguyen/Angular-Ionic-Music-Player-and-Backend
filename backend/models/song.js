@@ -23,7 +23,7 @@ var SongSchema = new mongoose.Schema({
             'Disco', 'Funk', 'Grunge', 'Hip-Hop',
             'Jazz', 'Metal', 'New Age', 'Oldies', 
             'Other', 'Pop', 'Rhythm and Blues', 'Rap', 
-            'Reggae', 'Rock', 'Techno,', 'Industrial'], message: 'Genre is not accepted'},
+            'Reggae', 'Rock', 'Techno', 'Industrial'], message: 'Genre is not accepted'},
         default: 'Other'
     },
     
@@ -74,6 +74,16 @@ var SongSchema = new mongoose.Schema({
     isWav: {
         type: Boolean,
         default: false
+    },
+
+    lyrics: {
+        type: String,
+        maxLength: 1000000
+    },
+
+    imagePath: {
+        type: String,
+        required: [true, "Image path not entered"]
     }
 })
 

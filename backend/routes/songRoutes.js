@@ -39,15 +39,25 @@ const upload = multer({
     // Filter if file is mimetype audio
     fileFilter: (req, file, cb) => {
 
-        if (file.mimetype.includes("audio/wav") || file.mimetype.includes('audio/mpeg') || file.mimetype.includes('audio/ogg')) {
-            cb(null, true)
-        } else {
-            req.fileValdiationError = 'Invalid extension - Only (WAV, MP3, OGG)'
-            return cb(null, false, req.fileValdiationError)
+        if (file.fieldname === 'audio') {
+            if (file.mimetype.includes("audio/wav") || file.mimetype.includes('audio/mpeg') || file.mimetype.includes('audio/ogg')) {
+                cb(null, true)
+            } else {
+                req.fileValdiationError = 'Invalid extension - Only (WAV, MP3, OGG)'
+                return cb(null, false, req.fileValdiationError)
+            }
+        }
+
+        if (file.fieldname === 'image') {
+            if (file.mimetype.includes("image")) {
+                cb(null, true)
+            } else {
+                req.fileValdiationError = 'Invalid extension - Only Images'
+                cb(null, false, req.fileValdiationError)
+            }
         }
     }
 })
-
 
 /*
     Song Controller
@@ -57,6 +67,10 @@ const upload = multer({
 // GET
 router.get('/stream', passport.authenticate('jwt', {session: false}), songController.stream_audio)
 router.get('/get', songController.getSong)
+router.get('/search/genre', passport.authenticate('jwt', {session: false}), songController.searchGenre)
+router.get('/search/artist', passport.authenticate('jwt', {session: false}), songController.searchArtist)
+router.get('/search/title', passport.authenticate('jwt', {session: false}), songController.searchTitle)
+router.get('/image', passport.authenticate('jwt', {session: false}), songController.getSongImage)
 
 // POST
 router.post('/add', 
@@ -64,13 +78,18 @@ router.post('/add',
     passport.authenticate('jwt', {session: false}), 
 
     // Returns 415 Unsupported Media Type If invalid file type
-    upload.single('file'), (req, res, next) => {
+
+    upload.fields([{
+        name: 'audio', maxCount: 1
+    }, {
+        name: 'image', maxCount: 1
+    }]), (req, res, next) => {
         if (req.fileValdiationError) {
             return res.status(415).json({Error: req.fileValdiationError})
         } else {
             next()
         }
-    }, 
+    },
 
     songController.addSong
 )

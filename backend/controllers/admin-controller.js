@@ -1,6 +1,7 @@
 const fs = require('fs')
 const User = require('../models/user.js')
 const Song = require('../models/song.js')
+const Claim = require('../models/claim.js')
 
 // Example admin page (requires admin role)
 const adminManage = (req, res) => {
@@ -85,9 +86,139 @@ const adminUserStatus = async (req, res) => {
     }
 }
 
+// Get Claim
+const adminGetClaim = async (req, res) => {
+
+    try {
+        
+        if (req.user.role != 'admin') {
+            return res.status(403).json({'message': 'User does not have permissions.'})
+        }
+
+        const claimFind = await Claim.findOne({_id: req.params.id})
+        .catch((err) => {
+            return null
+        })
+
+        if (!claimFind) {
+            return res.status(400).json({Error: 'Claim with that ID does not exist'})
+        }
+
+        return res.status(200).json({'Message': 'Claim Found', claimFind})
+
+    } catch (err) {
+        return res.status(400).json(err)
+    }
+}
+
+// Get All Claims
+const adminGetClaims = async (req, res) => {
+    
+    try {
+
+        if (req.user.role != 'admin') {
+            return res.status(403).json({'message': 'User does not have permissions.'})
+        }
+
+        const claimsFind = await Claim.find()
+        .catch((err) => {
+            return null
+        })
+        
+        return res.status(200).json({'Message': 'All Claims', claimsFind})
+
+    } catch (err) {
+        return res.status(400).json(err)
+    }
+}
+
+// Get All Unresolved Claims
+const adminGetUnresolvedClaims = async (req, res) => {
+
+    try {
+
+        if (req.user.role != 'admin') {
+            return res.status(403).json({'message': 'User does not have permissions.'})
+        }
+
+        const claimsFind = await Claim.find({status: "Unresolved"})
+        .catch((err) => {
+            return null
+        })
+
+        return res.status(200).json({'Message': 'All Unresolved Claims', claimsFind})
+
+    } catch (err) {
+        return res.status(400).json(err)
+    }
+}
+
+// Get All Resolved Claims
+const adminGetResolvedClaims = async (req, res) => {
+
+    try {
+
+        if (req.user.role != 'admin') {
+            return res.status(403).json({'message': 'User does not have permissions.'})
+        }
+
+        const claimsFind = await Claim.find({status: "Resolved"})
+        .catch((err) => {
+            return null
+        })
+
+        return res.status(200).json({'Message': 'All Unresolved Claims', claimsFind})
+
+    } catch (err) {
+        return res.status(400).json(err)
+    }
+}
+
+// Resolve/Unresolve Claim
+const adminClaimStatus = async (req, res) => {
+
+    try {
+
+        if (req.user.role != 'admin') {
+            return res.status(403).json({'message': 'User does not have permissions.'})
+        }
+
+        if (!req.body.status || !req.body.claimId) {
+            return res.status(400).json({Error: 'Please enter a status and claimId'})
+        }
+
+        const claimFind = await Claim.findOne({_id: req.body.claimId})
+        .catch((err) => {
+            return null
+        })
+
+        if (!claimFind) {
+            return res.status(400).json({Error: 'Claim with that ID does not exist'})
+        }
+
+        claimFind.status = req.body.status
+        claimFind.adminId = req.user._id.toString()
+
+        await claimFind.save((err) => {
+            if (err) {
+                return res.status(400).json({"Error": err})
+            } else {
+                return res.status(200).json({"Message": "Status Updated", claimFind})
+            }
+        })
+
+    } catch (err) {
+        return res.status(400).json(err)
+    }
+}
 
 module.exports = {
     adminManage,
     adminDeleteSong,
-    adminUserStatus
+    adminUserStatus,
+    adminGetClaim,
+    adminGetClaims,
+    adminGetUnresolvedClaims,
+    adminGetResolvedClaims,
+    adminClaimStatus
 }
