@@ -16,5 +16,13 @@
   <div id="container">
     <strong>Ready to create an app?</strong>
     <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+
+    <ion-button [routerLink]="['/file']">Scan</ion-button>
+
+    <ion-button [routerLink]="['/list/genre']">Show Genres</ion-button>
+    <ion-button [routerLink]="['/list/artist']">Show Artists</ion-button>
+    <ion-button [routerLink]="['/list/all/song']">Show All</ion-button>
+    <ion-button [routerLink]="['/list/playlist']">Show Playlists</ion-button>
+
   </div>
 </ion-content>
