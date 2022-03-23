@@ -19,6 +19,18 @@ const routes: Routes = [
     path: 'file/:folder',
     loadChildren: () => import('./pages/file/file.module').then( m => m.FilePageModule)
   },
+  {
+    path: 'list',
+    loadChildren: () => import('./pages/list/list.module').then( m => m.ListPageModule)
+  },
+  {
+    path: 'list/:type',
+    loadChildren: () => import('./pages/list/list.module').then( m => m.ListPageModule)
+  },
+  {
+    path: 'list/:type/:id',
+    loadChildren: () => import('./pages/list/list.module').then( m => m.ListPageModule)
+  },
 
 ];
 
