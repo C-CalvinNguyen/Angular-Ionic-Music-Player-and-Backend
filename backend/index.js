@@ -29,6 +29,7 @@ const mongoose = require('mongoose')
 const config = require('./config/config.js')
 const strategyJwt = require('./middleware/jwt-strategy.js')
 const port = process.env.PORT || 8080
+const cors = require('cors')
 
 // Create app using express
 const app = express()
@@ -36,6 +37,12 @@ const app = express()
 // Use bodyParser to get info from POST request body
 app.use(bodyParser.urlencoded({ extended: true}))
 app.use(bodyParser.json())
+
+app.use(cors({
+    'allowedHeaders': ['Range', 'Authorization'],
+    'origin': '*',
+    'exposedHeaders': ['Content-Length', 'Content-Range']
+}));
 
 // Initialize passport module to use as middleware, and use the strategyJwt
 app.use(passport.initialize())

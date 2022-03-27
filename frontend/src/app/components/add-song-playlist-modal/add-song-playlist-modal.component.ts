@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Song } from 'src/app/models/song.model';
 import { ModalController } from '@ionic/angular';
-import { DatabaseService } from 'src/app/services/database.service';
+import { DatabaseService } from '../../services/database/database.service';
 
 @Component({
   selector: 'app-add-song-playlist-modal',

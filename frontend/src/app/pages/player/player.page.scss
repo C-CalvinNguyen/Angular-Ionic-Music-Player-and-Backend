@@ -1,0 +1,41 @@
+.logo {
+  margin: 2.5rem;
+  text-align: center;
+  font-size: 24px;
+  color: #3f51b5;
+  ion-icon {
+    height: 100px !important;
+    width: 100px !important;
+    font-size: 100px !important;
+  }
+}
+
+.ion-justify-content-center {
+  justify-content: center;
+  text-align: center;
+}
+
+#media-controls {
+  ion-button {
+    ion-icon {
+      height: 40px !important;
+      width: 40px !important;
+      font-size: 40px !important;
+    }
+  }
+}
+
+.textName {
+  font-size: 18px;
+  .textArt {
+  font-size: 12px;
+  }
+}
+
+.selectTitle {
+  font-size: 12px;
+}
+
+ion-popover {
+  --offset-y: -150px;
+}

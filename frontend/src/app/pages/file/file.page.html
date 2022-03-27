@@ -19,7 +19,7 @@
     <ion-item-sliding *ngFor="let f of folderContent">
       <!-- The actual file/folder item with click event -->
       <ion-item (click)="itemClicked(f)">
-        <ion-icon [name]="(f.stat.type === 'file') ? 'document' : 'folder'" slot="start"></ion-icon>
+        <ion-icon [name]="(f.stat.type === 'file' || f.stat.type === 'NSFileTypeRegular') ? 'document' : 'folder'" slot="start"></ion-icon>
         {{ f.name }}
       </ion-item>
 

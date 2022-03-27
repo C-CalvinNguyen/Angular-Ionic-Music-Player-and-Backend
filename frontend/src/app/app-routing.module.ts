@@ -30,7 +30,11 @@ const routes: Routes = [
   {
     path: 'list/:type/:id',
     loadChildren: () => import('./pages/list/list.module').then( m => m.ListPageModule)
+  },  {
+    path: 'player',
+    loadChildren: () => import('./pages/player/player.module').then( m => m.PlayerPageModule)
   },
+
 
 ];
 
