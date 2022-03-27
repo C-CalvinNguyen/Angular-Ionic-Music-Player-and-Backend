@@ -502,6 +502,8 @@ const stream_audio = async (req, res) => {
     if (fs.existsSync(songPath)) {
         
 
+        /*
+
         const range = req.headers.range
         const songSize = fs.statSync(songPath).size
 
@@ -527,6 +529,18 @@ const stream_audio = async (req, res) => {
 
         const stream = fs.createReadStream(songPath, {start, end})
         stream.pipe(res)
+
+        */
+
+        fs.readFile(songPath, (err, data) => {
+            if (err) {
+                res.writeHead(404, {'Content-Type': 'text/html'})
+                res.end('')
+            } else {
+                res.writeHead(200, {'Content-Type': `audio/${format}`})
+                res.end(data);
+            }
+        })
         
     } else {
         return res.status(400).json({Error: 'Song does not support that format'})

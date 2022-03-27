@@ -65,7 +65,9 @@ const upload = multer({
     Multer file middleware for multipart/form-data
 */
 // GET
-router.get('/stream', passport.authenticate('jwt', {session: false}), songController.stream_audio)
+//router.get('/stream', passport.authenticate('jwt', {session: false}), songController.stream_audio)
+router.get('/stream',  songController.stream_audio)
+
 router.get('/get', songController.getSong)
 router.get('/search/genre', passport.authenticate('jwt', {session: false}), songController.searchGenre)
 router.get('/search/artist', passport.authenticate('jwt', {session: false}), songController.searchArtist)
