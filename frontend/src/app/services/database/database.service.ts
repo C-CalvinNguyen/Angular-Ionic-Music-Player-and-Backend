@@ -6,8 +6,8 @@ import { SQLitePorter } from '@ionic-native/sqlite-porter/ngx';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Song } from '../models/song.model';
-import { List } from '../models/playlist.model';
+import { Song } from '../../models/song.model';
+import { List } from '../../models/playlist.model';
 
 @Injectable({
   providedIn: 'root'

@@ -42,11 +42,11 @@ var SongSchema = new mongoose.Schema({
 
     // Type (String, Enum, Required, Defaults)
     // Temporary Property
-    type: {
+    sourceType: {
         type: String,
-        enum: ['Online', 'Offline'],
+        enum: ['online', 'offline'],
         required: true,
-        default: 'Online'
+        default: 'online'
     },
 
     // Image Path (String)

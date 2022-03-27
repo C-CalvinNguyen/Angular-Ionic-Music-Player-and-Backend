@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 // Imported Packages
 import { ActivatedRoute, Router } from '@angular/router';
-import { DatabaseService } from 'src/app/services/database.service';
+import { DatabaseService } from '../../services/database/database.service';
 import { Song } from 'src/app/models/song.model';
 import { ModalController } from '@ionic/angular';
 
@@ -10,6 +10,9 @@ import { ModalController } from '@ionic/angular';
 import { CreatePlaylistModalComponent } from 'src/app/components/create-playlist-modal/create-playlist-modal.component';
 import { EditPlaylistModalComponent } from 'src/app/components/edit-playlist-modal/edit-playlist-modal.component';
 import { AddSongPlaylistModalComponent } from 'src/app/components/add-song-playlist-modal/add-song-playlist-modal.component';
+
+// Services
+import { DataService } from 'src/app/services/data/data.service';
 
 @Component({
   selector: 'app-list',
@@ -27,7 +30,8 @@ export class ListPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private db: DatabaseService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private dataService: DataService
   ) { }
 
   ngOnInit() {
@@ -97,6 +101,8 @@ export class ListPage implements OnInit {
     } else {
       // PASS PLAYLIST DATA && SELECTED SONG TO SONG SERVICE???
       console.log({index: entry, songs: this.displaySong});
+      this.dataService.setFiles(this.displaySong);
+      this.router.navigate(['/player/']);
     }
   }
 

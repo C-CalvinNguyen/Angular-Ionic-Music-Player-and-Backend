@@ -34,6 +34,7 @@
     "@types/jsmediatags": "^3.9.3",
     "cordova-plugin-file": "^6.0.2",
     "cordova-sqlite-storage": "^6.0.0",
+    "moment": "^2.29.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.2.0",
     "uk.co.workingedge.cordova.plugin.sqliteporter": "^1.1.1",

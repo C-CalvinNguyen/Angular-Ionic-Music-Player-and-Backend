@@ -6,7 +6,7 @@ import { File } from '@ionic-native/file/ngx';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 
-import { DatabaseService } from 'src/app/services/database.service';
+import { DatabaseService } from '../../services/database/database.service';
 
 import * as jsmediatagsType from '../../../../node_modules/@types/jsmediatags';
 import { AlertController } from '@ionic/angular';
@@ -74,7 +74,7 @@ export class FilePage implements OnInit {
     console.log('hello item clicked');
     console.log('directory ', entry);
       // Open the file or folder
-      if (entry.stat.type === 'file') {
+      if (entry.stat.type === 'file' || entry.stat.type === 'NSFileTypeRegular') {
 
       } else {
         const pathToOpen =
@@ -95,63 +95,66 @@ export class FilePage implements OnInit {
 
     this.db.deleteAllData().then(() => {console.log('Database Data Deleted');});
 
-    const temp = await this.scan(currentFolder, folderContent);
-    console.log(temp);
+    await this.scan(currentFolder, folderContent)
+    .then((temp) => {
 
-    for (const tempFile of temp) {
+      console.log(temp);
 
-      // Convert a device filepath into a Web View-friendly path.
-      const fileUrl = Capacitor.convertFileSrc(tempFile.stat.uri);
-      console.log(fileUrl);
+      for (const tempFile of temp) {
 
-      // Pass url to jsmediatags
-      jsmediatags.read(fileUrl, {
-        onSuccess: (tags) => {
-          console.log('Tags Found');
-          console.log(tags.tags);
+        // Convert a device filepath into a Web View-friendly path.
+        const fileUrl = Capacitor.convertFileSrc(tempFile.stat.uri);
+        console.log(fileUrl);
 
-          const tempTitle = (
-            tags.tags.title === undefined || tags.tags.title.trim() === ''
-            ) ? this.getTitle(tempFile.name) : tags.tags.title;
+        // Pass url to jsmediatags
+        jsmediatags.read(fileUrl, {
+          onSuccess: (tags) => {
+            console.log('Tags Found');
+            console.log(tags.tags);
 
-          const tempArtist = (
-            tags.tags.artist === undefined || tags.tags.artist.trim() === ''
-          ) ? 'No Artist' : tags.tags.artist;
+            const tempTitle = (
+              tags.tags.title === undefined || tags.tags.title.trim() === ''
+              ) ? this.getTitle(tempFile.name) : tags.tags.title;
 
-          const tempAlbum = (
-            tags.tags.album === undefined || tags.tags.album.trim() === ''
-          ) ? 'No Album' : tags.tags.album;
+            const tempArtist = (
+              tags.tags.artist === undefined || tags.tags.artist.trim() === ''
+            ) ? 'No Artist' : tags.tags.artist;
 
-          const tempGenre = (
-            tags.tags.genre === undefined || tags.tags.genre.trim() === ''
-          ) ? 'No Genre' : tags.tags.genre;
+            const tempAlbum = (
+              tags.tags.album === undefined || tags.tags.album.trim() === ''
+            ) ? 'No Album' : tags.tags.album;
 
-          const tempSource = tempFile.stat.uri;
-          const tempSourceType = 'offline';
-          const tempOnlineId = '';
+            const tempGenre = (
+              tags.tags.genre === undefined || tags.tags.genre.trim() === ''
+            ) ? 'No Genre' : tags.tags.genre;
 
-          this.db.addSong(tempTitle, tempArtist, tempAlbum, tempGenre, tempSource, tempSourceType, tempOnlineId).then(
-            () => console.log(`Successful Insert of ${tempTitle} WITH TAGS`)
-          );
-        },
-        onError: (error) => {
-          console.log('Invalid || NO TAGS');
-          console.log(error);
+            const tempSource = tempFile.stat.uri;
+            const tempSourceType = 'offline';
+            const tempOnlineId = '';
 
-          const tempTitle = this.getTitle(tempFile.name);
-          const tempArtist = 'No Artist';
-          const tempAlbum = 'No Album';
-          const tempGenre = 'No Genre';
-          const tempSource = tempFile.stat.uri;
-          const tempSourceType = 'offline';
-          const tempOnlineId = '';
+            this.db.addSong(tempTitle, tempArtist, tempAlbum, tempGenre, tempSource, tempSourceType, tempOnlineId).then(
+              () => console.log(`Successful Insert of ${tempTitle} WITH TAGS`)
+            );
+          },
+          onError: (error) => {
+            console.log('Invalid || NO TAGS');
+            console.log(error);
 
-          this.db.addSong(tempTitle, tempArtist, tempAlbum, tempGenre, tempSource, tempSourceType, tempOnlineId).then(
-            () => console.log(`Successful Insert of ${tempTitle} WITHOUT TAGS`)
-          );
-        }
-      });
-    }
+            const tempTitle = this.getTitle(tempFile.name);
+            const tempArtist = 'No Artist';
+            const tempAlbum = 'No Album';
+            const tempGenre = 'No Genre';
+            const tempSource = tempFile.stat.uri;
+            const tempSourceType = 'offline';
+            const tempOnlineId = '';
+
+            this.db.addSong(tempTitle, tempArtist, tempAlbum, tempGenre, tempSource, tempSourceType, tempOnlineId).then(
+              () => console.log(`Successful Insert of ${tempTitle} WITHOUT TAGS`)
+            );
+          }
+        });
+      }
+    })
   }
 
   /*
@@ -208,10 +211,10 @@ export class FilePage implements OnInit {
     for (const file of folderArray) {
       const ext = file.stat.uri.split('.').pop();
 
-      if(file.stat.type === 'file' && this.isAudioType(ext)) {
+      if((file.stat.type === 'file' || file.stat.type === 'NSFileTypeRegular') && this.isAudioType(ext)) {
         toReturn.push(file);
       }
-      if(file.stat.type === 'directory') {
+      if(file.stat.type === 'directory' || file.stat.type === 'NSFileTypeDirectory') {
         await this.getDocuments(`${currentFolder}/${file.name}`)
         .then(async (data) => {
 
