@@ -549,8 +549,17 @@ const stream_audio = async (req, res) => {
 
 // TO DO: RETURN SONG INFO FROM DATABASE
 const getSong = async (req, res) => {
-    const songFind = await Song.findOne({_id: req.body.id})
-    return res.send(songFind)
+    await Song.findOne({_id: req.query.id}).then((songFind) => {
+        console.log(songFind);
+        let tempData = {
+            title: songFind.title,
+            artist: songFind.artist,
+            genre: songFind.genre,
+            sourceType: songFind.sourceType
+        }
+        return res.json(tempData);
+    });
+
 }
 
 /* 

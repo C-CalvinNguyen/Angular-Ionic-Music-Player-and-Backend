@@ -10,6 +10,8 @@ import { DatabaseService } from '../../services/database/database.service';
 
 import * as jsmediatagsType from '../../../../node_modules/@types/jsmediatags';
 import { AlertController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
+
 const jsmediatags = (window as any).jsmediatags as typeof jsmediatagsType;
 
 const APP_DIRECTORY = Directory.Documents;
@@ -28,7 +30,7 @@ export class FilePage implements OnInit {
   currentFolder = '';
 
   constructor(private route: ActivatedRoute, private router: Router, private file: File,
-    private db: DatabaseService, private alertCtrl: AlertController) { }
+    private db: DatabaseService, private alertCtrl: AlertController, private loadingController: LoadingController) { }
 
   // Lifecycle hook when page opens
   ngOnInit() {
@@ -95,8 +97,12 @@ export class FilePage implements OnInit {
 
     this.db.deleteAllData().then(() => {console.log('Database Data Deleted');});
 
+    const loading = await this.loadingController.create({});
+
     await this.scan(currentFolder, folderContent)
-    .then((temp) => {
+    .then(async (temp) => {
+
+      loading.present();
 
       console.log(temp);
 
@@ -154,7 +160,10 @@ export class FilePage implements OnInit {
           }
         });
       }
-    })
+
+      loading.dismiss();
+
+    });
   }
 
   /*

@@ -34,6 +34,10 @@ const routes: Routes = [
     path: 'player',
     loadChildren: () => import('./pages/player/player.module').then( m => m.PlayerPageModule)
   },
+  {
+    path: 'upload',
+    loadChildren: () => import('./pages/upload/upload.module').then( m => m.UploadPageModule)
+  },
 
 
 ];

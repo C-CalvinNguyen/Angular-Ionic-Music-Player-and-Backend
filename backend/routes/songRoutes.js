@@ -72,7 +72,7 @@ router.get('/get', songController.getSong)
 router.get('/search/genre', passport.authenticate('jwt', {session: false}), songController.searchGenre)
 router.get('/search/artist', passport.authenticate('jwt', {session: false}), songController.searchArtist)
 router.get('/search/title', passport.authenticate('jwt', {session: false}), songController.searchTitle)
-router.get('/image', passport.authenticate('jwt', {session: false}), songController.getSongImage)
+router.get('/image', songController.getSongImage)
 
 // POST
 router.post('/add', 
