@@ -25,12 +25,14 @@ export class PlayerPage implements OnInit {
   currentPlt: any[] = [];
   bitRate = '320';
   format = 'mp3';
+  currentSongInfo: any =  {image: 'assets/temp.jpg'};
 
   constructor(
     public audioService: AudioService,
     public dataService: DataService,
     private httpClient: HttpClient,
-    private plt: Platform
+    private plt: Platform,
+    private http: HttpClient
   ) {
 
     // Get Media Files
@@ -61,6 +63,8 @@ export class PlayerPage implements OnInit {
       console.log('Hello This is Online');
       const src = file.source;
       let tempUrl2 = '';
+      let imgUrl = '';
+      let infoUrl = '';
 
       console.log(this.currentPlt);
 
@@ -72,9 +76,30 @@ export class PlayerPage implements OnInit {
       */
       if (this.currentPlt[0] === 'android') {
         tempUrl2 = `http://10.0.2.2:8080/song/stream?s=${file.onlineId}&f=${this.format}&b=${this.bitRate}`;
+        imgUrl = `http://10.0.2.2:8080/song/image?id=${file.onlineId}`;
+        infoUrl = `http://10.0.2.2:8080/song/get?id=${file.onlineId}`;
       } else {
         tempUrl2 = `http://localhost:8080/song/stream?s=${file.onlineId}&b=${this.bitRate}&f=${this.format}`;
+        imgUrl = `http://localhost:8080/song/image?id=${file.onlineId}`;
+        infoUrl = `http://localhost:8080/song/get?id=${file.onlineId}`;
       }
+
+      fetch(imgUrl, {})
+      .then((res) => {
+        res.blob().then(blob => {
+          const imgUrl2 = URL.createObjectURL(blob);
+          this.currentSongInfo.image = imgUrl2;
+        });
+      });
+
+      fetch(infoUrl, {})
+      .then ((result) => {
+        result.json().then(data => {
+          this.currentSongInfo.title = data.title;
+          this.currentSongInfo.artist = data.artist;
+          this.currentSongInfo.genre = data.genre;
+        });
+      });
 
       fetch(tempUrl2, {})
       .then((res) => {
@@ -85,6 +110,10 @@ export class PlayerPage implements OnInit {
       });
 
     } else {
+      this.currentSongInfo.image = 'assets/temp.jpg';
+      this.currentSongInfo.title = this.currentFile.file.title;
+      this.currentSongInfo.artist = this.currentFile.file.artist;
+      this.currentSongInfo.genre = this.currentFile.file.genre;
       console.log(this.currentFile);
       const tempUrl = Capacitor.convertFileSrc(file.source);
 

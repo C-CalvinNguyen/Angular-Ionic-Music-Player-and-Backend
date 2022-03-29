@@ -40,7 +40,7 @@ const upload = multer({
     fileFilter: (req, file, cb) => {
 
         if (file.fieldname === 'audio') {
-            if (file.mimetype.includes("audio/wav") || file.mimetype.includes('audio/mpeg') || file.mimetype.includes('audio/ogg')) {
+            if (file.mimetype.includes("audio/wav") || file.mimetype.includes('audio/mpeg') || file.mimetype.includes('audio/ogg') || file.mimetype.includes('audio/mp3')) {
                 cb(null, true)
             } else {
                 req.fileValdiationError = 'Invalid extension - Only (WAV, MP3, OGG)'
@@ -72,7 +72,7 @@ router.get('/get', songController.getSong)
 router.get('/search/genre', passport.authenticate('jwt', {session: false}), songController.searchGenre)
 router.get('/search/artist', passport.authenticate('jwt', {session: false}), songController.searchArtist)
 router.get('/search/title', passport.authenticate('jwt', {session: false}), songController.searchTitle)
-router.get('/image', passport.authenticate('jwt', {session: false}), songController.getSongImage)
+router.get('/image', songController.getSongImage)
 
 // POST
 router.post('/add', 

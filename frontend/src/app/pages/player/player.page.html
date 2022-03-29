@@ -1,16 +1,18 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Player</ion-title>
+    <ion-title>Audio Player</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
 
   <div padding class="logo">
-    <ion-icon name="musical-note"></ion-icon>
-    <h2>Audio Player</h2>
+    <ion-img [src]="currentSongInfo.image"></ion-img>
 
-    <ion-label class="selectTitle" *ngIf="currentFile">{{currentFile.file?.title}}</ion-label>
+    <h3 *ngIf="currentFile">{{currentSongInfo.title}}</h3>
+    <ion-label class="selectTitle" *ngIf="currentFile">{{currentSongInfo.artist}}</ion-label>
+    <br/>
+    <ion-label class="selectTitle" *ngIf="currentFile">{{currentSongInfo.genre}}</ion-label>
 
   </div>
 
@@ -24,10 +26,6 @@
         <ion-label class="textName">
           {{file.title}}
           <br/>
-
-          <ion-text class="textArt">
-            by {{file.artist}}
-          </ion-text>
         </ion-label>
 
         <p slot="end" *ngIf="currentFile.index === i">SELECTED</p>

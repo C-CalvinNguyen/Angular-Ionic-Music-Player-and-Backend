@@ -15,7 +15,7 @@ import { SQLite } from '@ionic-native/sqlite/ngx';
 
 import { HttpClientModule } from '@angular/common/http';
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // Custom Module Import
 import { SharedcomponentModule } from './modules/sharedcomponent/sharedcomponent.module';
@@ -23,7 +23,8 @@ import { SharedcomponentModule } from './modules/sharedcomponent/sharedcomponent
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule, SharedcomponentModule, FormsModule],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,
+    HttpClientModule, SharedcomponentModule, FormsModule, ReactiveFormsModule],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     File,

@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Upload</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+
+  <form [formGroup]="uploadForm" (ngSubmit)="uploadContent()">
+    <input type="file" accept="audio/*" #audioChooser required/>
+    <input type="file" accept="image/*" #imageChooser required/>
+    <br/>
+    <ion-label>JWT</ion-label>
+    <ion-input type="text" formControlName="jwt" style="border: 1px solid black;" required></ion-input>
+    <ion-label>Title</ion-label>
+    <ion-input type="text" formControlName="title" style="border: 1px solid black;" required></ion-input>
+    <ion-label>Artist</ion-label>
+    <ion-input type="text" formControlName="artist" style="border: 1px solid black;" required></ion-input>
+    <ion-label>Genre</ion-label>
+    <ion-select style="border: 1px solid black;" formControlName="genre" required>
+      <ion-select-option value="Other">Other</ion-select-option>
+      <ion-select-option value="Rock">Rock</ion-select-option>
+      <ion-select-option value="Pop">Pop</ion-select-option>
+      <ion-select-option value="Techno">Techno</ion-select-option>
+      <ion-select-option value="Hip-Hop">Hip-Hop</ion-select-option>
+      <ion-select-option value="Metal">Metal</ion-select-option>
+    </ion-select>
+    <ion-button type="submit" color="primary">Upload</ion-button>
+  </form>
+
+</ion-content>
