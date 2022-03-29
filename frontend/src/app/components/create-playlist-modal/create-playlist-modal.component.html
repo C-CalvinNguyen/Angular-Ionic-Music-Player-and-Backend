@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Create Playlist</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+
+  <ion-item>
+    <ion-label position="stacked">Playlist Title?</ion-label>
+    <ion-input [(ngModel)]="newPlaylist.title" placeholder="Playlist Title"></ion-input>
+  </ion-item>
+  <ion-button expand="block" (click)="createNewPlaylist()">Create</ion-button>
+
+  <p>
+    create-playlist-modal works!
+  </p>
+</ion-content>
