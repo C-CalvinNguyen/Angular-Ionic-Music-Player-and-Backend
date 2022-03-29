@@ -40,7 +40,7 @@ const upload = multer({
     fileFilter: (req, file, cb) => {
 
         if (file.fieldname === 'audio') {
-            if (file.mimetype.includes("audio/wav") || file.mimetype.includes('audio/mpeg') || file.mimetype.includes('audio/ogg')) {
+            if (file.mimetype.includes("audio/wav") || file.mimetype.includes('audio/mpeg') || file.mimetype.includes('audio/ogg') || file.mimetype.includes('audio/mp3')) {
                 cb(null, true)
             } else {
                 req.fileValdiationError = 'Invalid extension - Only (WAV, MP3, OGG)'
