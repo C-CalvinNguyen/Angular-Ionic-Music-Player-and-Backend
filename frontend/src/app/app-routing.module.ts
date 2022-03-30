@@ -38,6 +38,10 @@ const routes: Routes = [
     path: 'upload',
     loadChildren: () => import('./pages/upload/upload.module').then( m => m.UploadPageModule)
   },
+  {
+    path: 'mainapp',
+    loadChildren: () => import('./mainapp/mainapp.module').then( m => m.MainappPageModule)
+  },
 
 
 ];
