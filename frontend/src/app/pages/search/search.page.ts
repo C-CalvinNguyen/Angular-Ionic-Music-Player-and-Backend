@@ -1,8 +1,13 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable quote-props */
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { SongDataService } from 'src/app/services/songData/song-data.service';
+import { TOKEN_KEY } from 'src/app/constants';
+import { Storage } from '@ionic/storage';
+import { BACKEND_ANDROID_SERVER } from 'src/app/constants';
 
 @Component({
   selector: 'app-search',
@@ -12,58 +17,57 @@ import { SongDataService } from 'src/app/services/songData/song-data.service';
 export class SearchPage implements OnInit {
 
   searchForm = new FormGroup({
-    jwt: new FormControl(),
     searchText: new FormControl(),
     searchCondition: new FormControl()
   });
 
-  searchContent: any[] = [
-    {title: 'Test 1'},
-    {title: 'Test 2'},
-    {title: 'Test 3'},
-  ];
+  searchContent: any[] = [];
 
-  constructor(private toastCtrl: ToastController, private songDataService: SongDataService, private router: Router) { }
+  constructor(private toastCtrl: ToastController, private songDataService: SongDataService,
+    private router: Router, private storage: Storage) { }
 
   ngOnInit() {
   }
 
   search() {
-    const tempJWT = this.searchForm.get('jwt').value;
-    let tempSearch = this.searchForm.get('searchText').value;
-    let tempCondition = this.searchForm.get('searchCondition').value;
 
-    console.log(tempSearch, tempCondition);
+    let tempJWT = '';
+    this.storage.get(TOKEN_KEY).then(data => {
+      tempJWT = data.toString();
+      let tempSearch = this.searchForm.get('searchText').value;
+      let tempCondition = this.searchForm.get('searchCondition').value;
+
+      console.log(tempSearch, tempCondition);
 
 
-    // iF temp search and condition are null DEFAULT to teampSearch = '' and tempCondition = 'title'
-    if (tempCondition === null) {
-      tempCondition = 'title';
-    }
+      // iF temp search and condition are null DEFAULT to teampSearch = '' and tempCondition = 'title'
+      if (tempCondition === null) {
+        tempCondition = 'title';
+      }
 
-    if (tempSearch === null) {
-      tempSearch = '';
-    }
+      if (tempSearch === null) {
+        tempSearch = '';
+      }
 
-    let url = '';
+      let url = '';
 
-    switch (tempCondition) {
-      case 'title':
-        url = `http://localhost:8080/song/search/title?title=${tempSearch}`;
-        this.callSearch(url, tempJWT);
-        break;
+      switch (tempCondition) {
+        case 'title':
+          url = `${BACKEND_ANDROID_SERVER}/song/search/title?title=${tempSearch}`;
+          this.callSearch(url, tempJWT);
+          break;
 
-      case 'genre':
-        url = `http://localhost:8080/song/search/genre?genre=${tempSearch}`;
-        this.callSearch(url, tempJWT);
-        break;
+        case 'genre':
+          url = `${BACKEND_ANDROID_SERVER}/song/search/genre?genre=${tempSearch}`;
+          this.callSearch(url, tempJWT);
+          break;
 
-      case 'artist':
-        url = `http://localhost:8080/song/search/artist?artist=${tempSearch}`;
-        this.callSearch(url, tempJWT);
-        break;
-    }
-
+        case 'artist':
+          url = `${BACKEND_ANDROID_SERVER}/song/search/artist?artist=${tempSearch}`;
+          this.callSearch(url, tempJWT);
+          break;
+      }
+    });
   }
 
 
@@ -78,6 +82,9 @@ export class SearchPage implements OnInit {
         })
       }).then(res => {
         res.json().then(async json => {
+
+          console.log(json);
+
           if (json.songsFind.length === 0) {
             const toast = await this.toastCtrl.create({
               message: 'No Songs Found',
