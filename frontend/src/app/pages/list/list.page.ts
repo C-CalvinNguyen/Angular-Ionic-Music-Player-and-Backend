@@ -12,7 +12,7 @@ import { EditPlaylistModalComponent } from 'src/app/components/edit-playlist-mod
 import { AddSongPlaylistModalComponent } from 'src/app/components/add-song-playlist-modal/add-song-playlist-modal.component';
 
 // Services
-import { DataService } from 'src/app/services/data/data.service';
+import { SongDataService } from 'src/app/services/songData/song-data.service';
 
 @Component({
   selector: 'app-list',
@@ -31,7 +31,7 @@ export class ListPage implements OnInit {
     private router: Router,
     private db: DatabaseService,
     private modalController: ModalController,
-    private dataService: DataService
+    private songDatService: SongDataService
   ) { }
 
   ngOnInit() {
@@ -101,7 +101,7 @@ export class ListPage implements OnInit {
     } else {
       // PASS PLAYLIST DATA && SELECTED SONG TO SONG SERVICE???
       console.log({index: entry, songs: this.displaySong});
-      this.dataService.setFiles(this.displaySong);
+      this.songDatService.setFiles(this.displaySong);
       this.router.navigate(['/player/']);
     }
   }

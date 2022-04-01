@@ -1,9 +1,14 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable quote-props */
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Capacitor } from '@capacitor/core';
 import { ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
+import { TOKEN_KEY } from 'src/app/constants';
+import { Storage } from '@ionic/storage';
+import { BACKEND_ANDROID_SERVER } from 'src/app/constants';
 
 @Component({
   selector: 'app-upload',
@@ -18,13 +23,13 @@ export class UploadPage implements OnInit {
   image: File;
 
   uploadForm = new FormGroup({
-    jwt: new FormControl(),
     title: new FormControl(),
     artist: new FormControl(),
     genre: new FormControl(),
   });
 
-  constructor(private router: Router, private loadingCtrl: LoadingController, private toastCtrl: ToastController) { }
+  constructor(private router: Router, private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController, private storage: Storage) { }
 
   ngOnInit() {
     this.listenerAudioChange();
@@ -37,7 +42,6 @@ export class UploadPage implements OnInit {
 
     loading.present();
     try {
-        console.log(this.uploadForm.get('jwt').value);
         //console.log(this.uploadForm.get('audio'));
         console.log(this.uploadForm.get('title').value);
         console.log(this.uploadForm.get('artist').value);
@@ -65,48 +69,60 @@ export class UploadPage implements OnInit {
           fd.append('image', this.image[0]);
         }
 
-        const tempJWT = this.uploadForm.get('jwt').value;
+        let tempJWT = '';
+        this.storage.get(TOKEN_KEY).then(async data => {
+          tempJWT = data.toString();
 
-        fd.append('audio', this.audio[0]);
+          fd.append('audio', this.audio[0]);
 
 
-        const tempTitle = this.uploadForm.get('title').value;
-        fd.append('title', tempTitle);
+          const tempTitle = this.uploadForm.get('title').value;
+          fd.append('title', tempTitle);
 
-        const tempArtist = this.uploadForm.get('artist').value;
-        fd.append('artist', tempArtist);
+          const tempArtist = this.uploadForm.get('artist').value;
+          fd.append('artist', tempArtist);
 
-        const tempGenre = this.uploadForm.get('genre').value;
-        fd.append('genre', tempGenre);
+          const tempGenre = this.uploadForm.get('genre').value;
+          fd.append('genre', tempGenre);
 
-        const uploadUrl = `http://10.0.2.2:8080/song/add`;
+          const uploadUrl = `http://10.0.2.2:8080/song/add`;
 
-        await fetch(uploadUrl, {
-          method: 'POST',
-          body: fd,
-          headers: new Headers({
-            'Authorization': `Bearer ${tempJWT}`
-          }),
-        }).then(async res => {
-          loading.dismiss();
-          if (res.status === 200) {
-            const toast = await this.toastCtrl.create({
-              message: `Status: ${res.status} 'Successful Upload'`,
-              duration: 2000
-            });
-            toast.present();
-            this.router.navigate(['/home']);
-          } else {
-            const toast = await this.toastCtrl.create({
-              message: `Status: ${res.status} ERROR`,
-              duration: 2000
-            });
-            toast.present();
-          }
-        }).catch(err => {
-          loading.dismiss();
-          console.log('Error', err);
+          await fetch(uploadUrl, {
+            method: 'POST',
+            body: fd,
+            headers: new Headers({
+              'Authorization': `Bearer ${tempJWT}`
+            }),
+          }).then(async res => {
+            loading.dismiss();
+            if (res.status === 200) {
+              const toast = await this.toastCtrl.create({
+                message: `Status: ${res.status} 'Successful Upload'`,
+                duration: 2000
+              });
+              toast.present();
+              this.router.navigate(['/home']);
+            }
+            else if (res.status === 415) {
+              const toast = await this.toastCtrl.create({
+                message: `Status: ${res.status} UNSUPPORTED MEDIA TYPE (WAV, MP3, OGG ONLY)`,
+                duration: 2000
+              });
+              toast.present();
+            } else {
+              const toast = await this.toastCtrl.create({
+                message: `Status: ${res.status} ERROR`,
+                duration: 2000
+              });
+              toast.present();
+            }
+          }).catch(err => {
+            loading.dismiss();
+            console.log('Error', err);
+          });
+
         });
+
       } catch (err) {
         loading.dismiss();
         console.log('Error', err);

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth/auth.guard';
 
 const routes: Routes = [
   {
@@ -37,13 +38,26 @@ const routes: Routes = [
   },
   {
     path: 'upload',
-    loadChildren: () => import('./pages/upload/upload.module').then( m => m.UploadPageModule)
+    loadChildren: () => import('./pages/upload/upload.module').then( m => m.UploadPageModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'search',
+    loadChildren: () => import('./pages/search/search.module').then( m => m.SearchPageModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'login',
+    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./pages/register/register.module').then( m => m.RegisterPageModule)
   },
   {
     path: 'mainapp',
-    loadChildren: () => import('./pages/mainapp/mainapp.module').then( m => m.MainappPageModule)
-  },
-
+    loadChildren: () => import('./pages/mainapp/mainapp.module').then( m => m.MainappPageModule)   
+  }
 
 ];
 

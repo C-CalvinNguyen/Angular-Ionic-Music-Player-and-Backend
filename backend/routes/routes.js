@@ -7,18 +7,14 @@ const userRoutes = require('./userRoutes.js')
 const playlistRoutes = require('./playlistRoutes.js')
 const ratingRoutes = require('./ratingRoutes.js')
 const claimRoutes = require('./claimRoutes.js')
+const authRoutes = require('./authRoutes.js')
 
-const authController = require('../controllers/auth-controller.js')
 const adminController = require('../controllers/admin-controller.js')
 
 // Default Home Page
 router.get('/', (req, res) => {
     res.send("Test Home for Backend");
 });
-
-// Auth Controller
-router.post('/register', authController.registerUser)
-router.post('/login', authController.loginUser)
 
 // TO DO - MIGRATE TO SPECIFIC ROUTES
 // Using middleware authentication, first argument is the strategy (JWT)
@@ -49,5 +45,8 @@ router.use('/rating', ratingRoutes)
 
 // Claim Controller
 router.use('/claim', claimRoutes)
+
+// Auth Controller
+router.use('/auth', authRoutes)
 
 module.exports = router
