@@ -8,7 +8,10 @@
 
 
   <form [formGroup]="uploadForm" (ngSubmit)="uploadContent()">
+    <ion-label>Audio File (WAV, MP3, OGG)</ion-label>
     <input type="file" accept="audio/*" #audioChooser required/>
+    <br/>
+    <ion-label>Image File</ion-label>
     <input type="file" accept="image/*" #imageChooser required/>
     <br/>
     <ion-label>JWT</ion-label>
@@ -26,7 +29,7 @@
       <ion-select-option value="Hip-Hop">Hip-Hop</ion-select-option>
       <ion-select-option value="Metal">Metal</ion-select-option>
     </ion-select>
-    <ion-button type="submit" color="primary">Upload</ion-button>
+    <ion-button type="submit" color="primary" expand="full">Upload</ion-button>
   </form>
 
 </ion-content>

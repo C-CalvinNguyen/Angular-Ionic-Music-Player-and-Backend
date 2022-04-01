@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 // Services
 import { AudioService } from 'src/app/services/audio/audio.service';
-import { DataService } from 'src/app/services/data/data.service';
+import { SongDataService } from 'src/app/services/songData/song-data.service';
 
 // State
 import { AudioState } from 'src/app/interfaces/audio-state';
@@ -29,14 +29,14 @@ export class PlayerPage implements OnInit {
 
   constructor(
     public audioService: AudioService,
-    public dataService: DataService,
+    public songDataService: SongDataService,
     private httpClient: HttpClient,
     private plt: Platform,
     private http: HttpClient
   ) {
 
     // Get Media Files
-    dataService.getFiles().subscribe(files => {
+    songDataService.getFiles().subscribe(files => {
       this.files = files;
     });
 

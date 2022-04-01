@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class DataService {
+export class SongDataService {
 
   files: any = [
     {title: 'Earth', artist: 'Asano', sourceType: 'online',
