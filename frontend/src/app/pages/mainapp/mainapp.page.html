@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Main App Page</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div id="container">
+
+    <ion-label>Hello User</ion-label>
+
+    <ion-row style="justify-content: center;">
+    <ion-button [routerLink]="['/upload']">Upload</ion-button>
+    <ion-button [routerLink]="['/search']">Search</ion-button>
+    <ion-button>Account</ion-button>
+    </ion-row>
+
+  </div>
+</ion-content>

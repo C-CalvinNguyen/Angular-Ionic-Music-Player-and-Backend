@@ -30,7 +30,8 @@ const routes: Routes = [
   {
     path: 'list/:type/:id',
     loadChildren: () => import('./pages/list/list.module').then( m => m.ListPageModule)
-  },  {
+  },
+  {
     path: 'player',
     loadChildren: () => import('./pages/player/player.module').then( m => m.PlayerPageModule)
   },
@@ -40,7 +41,7 @@ const routes: Routes = [
   },
   {
     path: 'mainapp',
-    loadChildren: () => import('./mainapp/mainapp.module').then( m => m.MainappPageModule)
+    loadChildren: () => import('./pages/mainapp/mainapp.module').then( m => m.MainappPageModule)
   },
 
 
