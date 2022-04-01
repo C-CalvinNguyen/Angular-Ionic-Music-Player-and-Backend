@@ -7,7 +7,9 @@
 <ion-content [fullscreen]="true">
   <div id="container">
 
-    <ion-label>Hello User</ion-label>
+    <ion-label>Hello, {{user.username}}</ion-label>
+    <br/>
+    <ion-label>Email: {{user.email}}</ion-label>
 
     <ion-row style="justify-content: center;">
     <ion-button [routerLink]="['/upload']">Upload</ion-button>

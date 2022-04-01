@@ -7,7 +7,7 @@ import { take, map, switchMap } from 'rxjs/operators';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { TOKEN_KEY, BACKEND_ANDROID_SERVER } from 'src/app/constants';
+import { TOKEN_KEY, BACKEND_ANDROID_SERVER, BACKEND_SERVER } from 'src/app/constants';
 
 const helper = new JwtHelperService();
 @Injectable({
@@ -16,6 +16,7 @@ const helper = new JwtHelperService();
 export class AuthService {
   public user: Observable<any>;
   private userData = new BehaviorSubject(null);
+  private isAuthenticated = new BehaviorSubject(false);
 
   constructor(private storage: Storage, private http: HttpClient, private plt: Platform, private router: Router) {
     this.loadStoredToken();
@@ -53,6 +54,8 @@ export class AuthService {
         const decoded = helper.decodeToken(token);
         this.userData.next(decoded);
 
+        this.isAuthenticated.next(true);
+
         const storageObs = from(this.storage.set(TOKEN_KEY, token));
         return storageObs;
       })
@@ -74,10 +77,15 @@ export class AuthService {
     return this.userData.getValue();
   }
 
+  getisAuthenticated() {
+    return this.isAuthenticated.asObservable();
+  }
+
   logout() {
     this.storage.remove(TOKEN_KEY).then(() => {
       this.router.navigateByUrl('/');
       this.userData.next(null);
+      this.isAuthenticated.next(false);
     });
   }
 

@@ -1,0 +1,33 @@
+<ion-menu side="end" contentId="second">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list *ngIf="user === false">
+      <ion-item color="primary" [routerLink]="['/home']">Home</ion-item>
+      <ion-item color="primary" [routerLink]="['/player']">Player</ion-item>
+      <ion-item color="primary" [routerLink]="['/list/all/song']">All Songs</ion-item>
+      <ion-item color="primary" [routerLink]="['/list/genre']">Genres</ion-item>
+      <ion-item color="primary" [routerLink]="['/list/artist']">Artists</ion-item>
+      <ion-item color="primary" [routerLink]="['/list/playlist']">Playlists</ion-item>
+      <ion-item color="primary" [routerLink]="['/login']">Login</ion-item>
+      <ion-item color="primary" [routerLink]="['/register']">Register</ion-item>
+    </ion-list>
+    <ion-list *ngIf="user !== false">
+      <ion-item color="primary" [routerLink]="['/home']">Home</ion-item>
+      <ion-item color="primary" [routerLink]="['/player']">Player</ion-item>
+      <ion-item color="primary" [routerLink]="['/list/all/song']">All Songs</ion-item>
+      <ion-item color="primary" [routerLink]="['/list/genre']">Genres</ion-item>
+      <ion-item color="primary" [routerLink]="['/list/artist']">Artists</ion-item>
+      <ion-item color="primary" [routerLink]="['/list/playlist']">Playlists</ion-item>
+      <ion-item color="primary" [routerLink]="['/mainapp']">Main App</ion-item>
+      <ion-item color="primary" [routerLink]="['/upload']">Upload</ion-item>
+      <ion-item color="primary" [routerLink]="['/search']">Search</ion-item>
+      <ion-item color="primary" (click)="logout()">Logout</ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-router-outlet id="second"></ion-router-outlet>
