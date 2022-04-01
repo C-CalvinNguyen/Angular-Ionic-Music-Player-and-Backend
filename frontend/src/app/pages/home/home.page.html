@@ -18,6 +18,7 @@
     <ion-row>
       <ion-col>
         <ion-button [routerLink]="['/player']">Player</ion-button>
+        <ion-button [routerLink]="['/file']">Scan</ion-button>
       </ion-col>
     </ion-row>
 
@@ -25,15 +26,6 @@
     <ion-button style="margin-right: 5px; margin-left: 5px;" expand="block" [routerLink]="['/list/genre']">Show Genres</ion-button>
     <ion-button style="margin-right: 5px; margin-left: 5px;" expand="block" [routerLink]="['/list/artist']">Show Artists</ion-button>
     <ion-button style="margin-right: 5px; margin-left: 5px;" expand="block" [routerLink]="['/list/playlist']">Show Playlists</ion-button>
-
-    <ion-row style="justify-content: center;">
-        <ion-button [routerLink]="['/upload']">Upload</ion-button>
-        <ion-button [routerLink]="['/file']">Scan</ion-button>
-        <ion-button [routerLink]="['/search']">Search</ion-button>
-    </ion-row>
-    <ion-button [routerLink]="['/mainapp']">Main App</ion-button>
-    <ion-button [routerLink]="['/login']">Login</ion-button>
-    <ion-button [routerLink]="['/register']">Register</ion-button>
 
   </div>
 </ion-content>

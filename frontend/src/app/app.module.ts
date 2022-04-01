@@ -18,11 +18,13 @@ import { IonicStorageModule } from '@ionic/storage-angular';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { RightMenuComponent } from './components/right-menu/right-menu/right-menu.component';
+
 // Custom Module Import
 import { SharedcomponentModule } from './modules/sharedcomponent/sharedcomponent.module';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, RightMenuComponent],
   entryComponents: [],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,
     HttpClientModule, SharedcomponentModule, FormsModule, ReactiveFormsModule, IonicStorageModule.forRoot()],
