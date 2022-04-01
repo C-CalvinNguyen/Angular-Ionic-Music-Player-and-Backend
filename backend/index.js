@@ -39,7 +39,7 @@ app.use(bodyParser.urlencoded({ extended: true}))
 app.use(bodyParser.json())
 
 app.use(cors({
-    'allowedHeaders': ['Range', 'Authorization'],
+    'allowedHeaders': ['Range', 'Authorization, Content-Type'],
     'origin': '*',
     'exposedHeaders': ['Content-Length', 'Content-Range']
 }));
