@@ -14,7 +14,7 @@ import { LoadingController } from '@ionic/angular';
 
 const jsmediatags = (window as any).jsmediatags as typeof jsmediatagsType;
 
-const APP_DIRECTORY = Directory.Documents;
+const APP_DIRECTORY = Directory.ExternalStorage;
 
 @Component({
   selector: 'app-file',
