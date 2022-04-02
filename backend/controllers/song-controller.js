@@ -555,7 +555,8 @@ const getSong = async (req, res) => {
             title: songFind.title,
             artist: songFind.artist,
             genre: songFind.genre,
-            sourceType: songFind.sourceType
+            sourceType: songFind.sourceType,
+            isWav: songFind.isWav
         }
         return res.json(tempData);
     });
