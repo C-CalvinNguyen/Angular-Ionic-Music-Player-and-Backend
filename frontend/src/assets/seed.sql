@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS song_list(
 -- INSERT DUMMY DATA
 
 -- Dummy Song
+/*
 INSERT OR IGNORE INTO song (
   id,
   title,
@@ -65,3 +66,4 @@ INSERT OR IGNORE INTO song_list (
   1,
   1
 )
+*/
