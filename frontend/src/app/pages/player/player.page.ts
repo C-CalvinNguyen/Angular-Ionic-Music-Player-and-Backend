@@ -12,6 +12,8 @@ import { Capacitor } from '@capacitor/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Platform } from '@ionic/angular';
 
+import { BACKEND_ANDROID_SERVER, BACKEND_SERVER } from 'src/app/constants';
+
 @Component({
   selector: 'app-player',
   templateUrl: './player.page.html',
@@ -23,6 +25,10 @@ export class PlayerPage implements OnInit {
   state: AudioState;
   currentFile: any = {};
   currentPlt: any[] = [];
+  isOnline = false;
+  isWav = false;
+  wavToggle = false;
+  oggToggle = false;
   bitRate = '320';
   format = 'mp3';
   currentSongInfo: any =  {image: 'assets/temp.jpg'};
@@ -68,6 +74,8 @@ export class PlayerPage implements OnInit {
 
       console.log(this.currentPlt);
 
+      this.isOnline = true;
+
 
       /*
       This is the path to get files from the backend (MUST RUN IONIC CAP RUN ANDROID --EXTERNAL)
@@ -75,13 +83,17 @@ export class PlayerPage implements OnInit {
       To bypass this 10.0.2.2 is used however WE MIGHT RUN THE BACKEND ON DIGITALOCEAN
       */
       if (this.currentPlt[0] === 'android') {
-        tempUrl2 = `http://10.0.2.2:8080/song/stream?s=${file.onlineId}&f=${this.format}&b=${this.bitRate}`;
-        imgUrl = `http://10.0.2.2:8080/song/image?id=${file.onlineId}`;
-        infoUrl = `http://10.0.2.2:8080/song/get?id=${file.onlineId}`;
+
+        tempUrl2 = `${BACKEND_ANDROID_SERVER}/song/stream?s=${file.onlineId}&f=${this.format}&b=${this.bitRate}`;
+        imgUrl = `${BACKEND_ANDROID_SERVER}/song/image?id=${file.onlineId}`;
+        infoUrl = `${BACKEND_ANDROID_SERVER}/song/get?id=${file.onlineId}`;
+
       } else {
-        tempUrl2 = `http://localhost:8080/song/stream?s=${file.onlineId}&b=${this.bitRate}&f=${this.format}`;
-        imgUrl = `http://localhost:8080/song/image?id=${file.onlineId}`;
-        infoUrl = `http://localhost:8080/song/get?id=${file.onlineId}`;
+
+        tempUrl2 = `${BACKEND_SERVER}/song/stream?s=${file.onlineId}&b=${this.bitRate}&f=${this.format}`;
+        imgUrl = `${BACKEND_SERVER}/song/image?id=${file.onlineId}`;
+        infoUrl = `${BACKEND_SERVER}/song/get?id=${file.onlineId}`;
+
       }
 
       fetch(imgUrl, {})
@@ -98,6 +110,7 @@ export class PlayerPage implements OnInit {
           this.currentSongInfo.title = data.title;
           this.currentSongInfo.artist = data.artist;
           this.currentSongInfo.genre = data.genre;
+          this.isWav = data.isWav;
         });
       });
 
@@ -110,6 +123,10 @@ export class PlayerPage implements OnInit {
       });
 
     } else {
+
+      this.isOnline = false;
+      this.isWav = false;
+
       this.currentSongInfo.image = 'assets/temp.jpg';
       this.currentSongInfo.title = this.currentFile.file.title;
       this.currentSongInfo.artist = this.currentFile.file.artist;
@@ -222,6 +239,78 @@ export class PlayerPage implements OnInit {
 
   setPlaybackSpeed(speed) {
     this.audioService.playbackSpeed(speed);
+  }
+
+  setFormat(format: any) {
+
+    if (format === 'mp3') {
+      this.wavToggle = false;
+      this.oggToggle = false;
+      this.format = 'mp3';
+
+      const index = this.currentFile.index;
+      const file = this.files[index];
+
+      this.openFile(file, index);
+
+    }
+    if (format === 'ogg') {
+      this.wavToggle = false;
+      this.oggToggle = true;
+      this.format = 'ogg';
+      this.bitRate = '256';
+
+      const index = this.currentFile.index;
+      const file = this.files[index];
+
+      this.openFile(file, index);
+    }
+    if (format === 'wav') {
+      this.wavToggle = true;
+      this.oggToggle = true;
+      this.format = 'wav';
+
+      const index = this.currentFile.index;
+      const file = this.files[index];
+
+      this.openFile(file, index);
+    }
+
+  }
+
+  setBitrate(bitrate: any) {
+
+    if (bitrate === '128') {
+
+      this.bitRate = '128';
+
+      const index = this.currentFile.index;
+      const file = this.files[index];
+
+      this.openFile(file, index);
+
+    }
+    if (bitrate === '256') {
+
+      this.bitRate = '256';
+
+      const index = this.currentFile.index;
+      const file = this.files[index];
+
+      this.openFile(file, index);
+
+    }
+    if (bitrate === '320') {
+
+      this.bitRate = '320';
+
+      const index = this.currentFile.index;
+      const file = this.files[index];
+
+      this.openFile(file, index);
+
+    }
+
   }
 
 }

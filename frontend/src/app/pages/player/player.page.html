@@ -43,6 +43,62 @@
   <ion-toolbar color="primary">
     <ion-grid>
       <ion-row class="ion-justify-content-center">
+        <ion-col size="2">
+
+          <div *ngIf="isOnline === true">
+          <ion-button fill="clear" id="other-options" >
+            <ion-icon color="light" name="settings"></ion-icon>
+          </ion-button>
+
+          <ion-popover trigger="other-options" [dismissOnSelect]="true">
+            <ng-template>
+              <ion-content>
+                <ion-list>
+
+                  <ion-item id="format-trigger" [button]="true">
+                    <ion-label>Format</ion-label>
+                  </ion-item>
+                  <ion-popover trigger="format-trigger" [dismissOnSelect]="true">
+                    <ng-template>
+                      <ion-content>
+                        <ion-item (click)="setFormat('mp3')">
+                          <ion-label>MP3</ion-label>
+                        </ion-item>
+                        <ion-item (click)="setFormat('ogg')">
+                          <ion-label>OGG</ion-label>
+                        </ion-item>
+                        <ion-item *ngIf="isWav === true" (click)="setFormat('wav')">
+                          <ion-label>WAV</ion-label>
+                        </ion-item>
+                      </ion-content>
+                    </ng-template>
+                  </ion-popover>
+
+                  <ion-item id="bitrate-trigger" [button]="true" *ngIf="wavToggle === false">
+                    <ion-label>Bitrate</ion-label>
+                  </ion-item>
+                  <ion-popover trigger="bitrate-trigger" [dismissOnSelect]="true">
+                    <ng-template>
+                      <ion-content>
+                        <ion-item (click)="setBitrate('128')">
+                          <ion-label>128</ion-label>
+                        </ion-item>
+                        <ion-item (click)="setBitrate('256')">
+                          <ion-label>256</ion-label>
+                        </ion-item>
+                        <ion-item (click)="setBitrate('320')" *ngIf="oggToggle === false">
+                          <ion-label>320</ion-label>
+                        </ion-item>
+                      </ion-content>
+                    </ng-template>
+                  </ion-popover>
+                </ion-list>
+              </ion-content>
+            </ng-template>
+          </ion-popover>
+          </div>
+        </ion-col>
+
         <ion-col size = "2">
           <ion-button fill="clear" (click)="toggleShuffle()" *ngIf="!state?.shuffle">
             <ion-icon color="dark" name="shuffle"></ion-icon>
