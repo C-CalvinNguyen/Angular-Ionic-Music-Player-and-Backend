@@ -7,14 +7,12 @@
 <ion-content [fullscreen]="true">
   <div id="container">
 
-    <ion-label>Hello, {{user.username}}</ion-label>
-    <br/>
-    <ion-label>Email: {{user.email}}</ion-label>
+    <ion-label>Greetings, {{user.username}}, You are successfully logged in.</ion-label>
 
-    <ion-row style="justify-content: center;">
+    <ion-row style="justify-content: center; padding-top: 5vw;">
     <ion-button [routerLink]="['/upload']">Upload</ion-button>
     <ion-button [routerLink]="['/search']">Search</ion-button>
-    <ion-button>Account</ion-button>
+    <ion-button [routerLink]="['/account']">Account</ion-button>
     </ion-row>
 
   </div>

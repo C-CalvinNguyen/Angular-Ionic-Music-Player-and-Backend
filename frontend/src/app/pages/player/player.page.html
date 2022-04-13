@@ -21,14 +21,12 @@
     <ng-container *ngFor="let file of files; let i = index">
       <ion-item (click)="openFile(file, i)">
 
-        <ion-icon color="primary" name="musical-note" slot="start"></ion-icon>
-
         <ion-label class="textName">
           {{file.title}}
           <br/>
         </ion-label>
 
-        <p slot="end" *ngIf="currentFile.index === i">SELECTED</p>
+        <p slot="end" *ngIf="currentFile.index === i">PLAYING</p>
         <ion-icon slot="end" *ngIf="currentFile.index !== i && !state?.error" name="play"></ion-icon>
         <p slot="end" *ngIf="currentFile.index === i && state?.error">ERROR</p>
 

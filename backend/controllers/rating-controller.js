@@ -44,6 +44,24 @@ const getAllRatingBySong = async (req, res) => {
     }
 }
 
+const getAvgRatingBySong = async (req, res) => {
+
+    try {
+        const ratings = await Rating.find({songId: req.query.songId})
+        let totalRating = 0;
+
+        for (let i = 0; i < ratings.length; i++) {
+            totalRating += ratings[i].score;
+        }
+
+        let avgRating = totalRating / ratings.length;
+
+        res.status(200).send({'avg': avgRating})
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 const getRatingBySongAndUser = async (req, res) => {
     try {
         const ratings = await Rating.findOne({songId: req.body.songId, userId: req.user._id.toString()})
@@ -105,5 +123,6 @@ module.exports = {
     getAllRatingBySong,
     getRatingBySongAndUser,
     getRating,
-    deleteRating
+    deleteRating,
+    getAvgRatingBySong
 }

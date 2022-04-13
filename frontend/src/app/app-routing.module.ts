@@ -58,7 +58,15 @@ const routes: Routes = [
     path: 'mainapp',
     loadChildren: () => import('./pages/mainapp/mainapp.module').then( m => m.MainappPageModule),
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'account',
+    loadChildren: () => import('./pages/account/account.module').then( m => m.AccountPageModule)
+  },  {
+    path: 'edit-song',
+    loadChildren: () => import('./pages/edit-song/edit-song.module').then( m => m.EditSongPageModule)
   }
+
 
 ];
 

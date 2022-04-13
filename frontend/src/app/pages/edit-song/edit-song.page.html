@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Song Info (Edit)</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-img [src]="song.image" style="height: 20vh; width: auto;"></ion-img>
+  <ion-label style="padding: 30vw;">
+    Title: {{song.title}}
+  </ion-label>
+  <ion-label style="padding: 30vw;">
+    Artist: {{song.artist}}
+    <br/>
+  </ion-label>
+  <ion-label style="padding: 30vw;">
+    Genre: {{song.genre}}
+    <br/>
+  </ion-label>
+  <ion-label style="padding: 30vw;">
+    Views: {{song.plays}}
+    <br/>
+  </ion-label>
+  <ion-label style="padding: 30vw;">
+    Average Rating: {{avgRating}}
+  </ion-label>
+
+</ion-content>
+
+<ion-content style="border-top: 3px solid black;">
+  Form goes here
+</ion-content>

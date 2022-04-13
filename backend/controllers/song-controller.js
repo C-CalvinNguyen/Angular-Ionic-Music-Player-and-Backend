@@ -563,6 +563,12 @@ const getSong = async (req, res) => {
 
 }
 
+const getSongByUserId = async (req, res) => {
+    await Song.find({userId: req.user.id.toString()}).then((songList) => {
+        return res.json(songList);
+    })
+}
+
 /* 
 TO DO: RETURN SONG IMAGE
 WORKS ATM, MIGHT CHANGE HOW IT WORKS LATER
@@ -630,5 +636,6 @@ module.exports = {
     searchGenre,
     searchArtist,
     searchTitle,
-    getSongImage
+    getSongImage,
+    getSongByUserId
 }

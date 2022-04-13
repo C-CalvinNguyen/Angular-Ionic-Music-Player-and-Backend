@@ -1,3 +1,15 @@
-<p>
-  edit-playlist-modal works!
-</p>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Edit Playlist</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+
+  <ion-item>
+    <ion-label position="stacked">Playlist Title?</ion-label>
+    <ion-input [(ngModel)]="newPlaylist.title" placeholder="{{playlistTitle}}"></ion-input>
+  </ion-item>
+  <ion-button expand="block" (click)="editPlaylist()">Edit Title</ion-button>
+
+</ion-content>
