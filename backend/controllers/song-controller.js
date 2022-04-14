@@ -329,6 +329,10 @@ const editSong = async (req, res) => {
                         let oldPath = songFind.audioPath
                         let oldTitle = songFind.title
                         let newTitle = req.body.title
+
+                        let imgExt = songFind.imagePath.split('.').pop();
+
+                        songFind.imagePath = path.join(newPath, `${oldTitle}.${imgExt}`)
                         songFind.audioPath = newPath
                         songFind.title = req.body.title
 
