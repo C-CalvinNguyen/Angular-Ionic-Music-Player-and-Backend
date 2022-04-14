@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { BACKEND_ANDROID_SERVER } from 'src/app/constants';
 import { SongInfoService } from 'src/app/services/songInfo/song-info.service';
 
+import { FormGroup, FormControl } from '@angular/forms';
+
 @Component({
   selector: 'app-edit-song',
   templateUrl: './edit-song.page.html',
@@ -10,12 +12,20 @@ import { SongInfoService } from 'src/app/services/songInfo/song-info.service';
 })
 export class EditSongPage implements OnInit {
 
-  song: any = {};
+  song: any = {title: 'test'};
   avgRating: 0;
+
+  editForm: FormGroup;
 
   constructor(private router: Router, private songInfoService: SongInfoService) {
     this.songInfoService.getFiles().subscribe(data => {
       this.song = data;
+
+      this.editForm = new FormGroup({
+        title: new FormControl(this.song.title),
+        artist: new FormControl(this.song.artist),
+        genre: new FormControl(this.song.genre)
+      });
     });
 
     this.getAvgRating();
@@ -57,6 +67,14 @@ export class EditSongPage implements OnInit {
     .catch(err => {
       console.error(err);
     });
+
+  }
+
+  editSong() {
+
+    console.log(this.editForm.get('title').value);
+    console.log(this.editForm.get('artist').value);
+    console.log(this.editForm.get('genre').value);
 
   }
 

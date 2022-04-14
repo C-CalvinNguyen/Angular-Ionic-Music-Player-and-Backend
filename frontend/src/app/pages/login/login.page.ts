@@ -27,7 +27,7 @@ export class LoginPage implements OnInit {
   login() {
     this.auth.login(this.credentials).subscribe(async res => {
       if (res) {
-        this.router.navigateByUrl('/home');
+        this.router.navigateByUrl('/mainapp');
       } else {
         const alert = await this.alertCtrl.create({
           header: 'Login Failed',
