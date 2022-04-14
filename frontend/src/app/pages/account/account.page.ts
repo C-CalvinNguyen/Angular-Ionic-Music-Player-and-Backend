@@ -29,6 +29,10 @@ export class AccountPage implements OnInit {
   ngOnInit() {
   }
 
+  ionViewDidEnter() {
+    this.getUserSongs();
+  }
+
   getUserSongs() {
     try {
 
