@@ -4,7 +4,7 @@ const ratingController = require('../controllers/rating-controller.js')
 const passport = require('passport')
 
 // Requires SongId, Gets rating that user has uploaded (IF THEY DID, IF NOT EMPTY RETURN)
-router.get('/get', ratingController.getRatingBySongAndUser)
+router.get('/get', passport.authenticate('jwt', {session: false}), ratingController.getRatingBySongAndUser)
 
 router.get('/avg', ratingController.getAvgRatingBySong)
 

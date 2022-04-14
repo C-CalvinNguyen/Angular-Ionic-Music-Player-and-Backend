@@ -13,6 +13,10 @@
     <ion-label class="selectTitle" *ngIf="currentFile">{{currentSongInfo.artist}}</ion-label>
     <br/>
     <ion-label class="selectTitle" *ngIf="currentFile">{{currentSongInfo.genre}}</ion-label>
+    <br/>
+    <div *ngIf="rating !== null">
+      <ion-label class="selectTitle">Your Rating: {{rating}}</ion-label>
+    </div>
 
   </div>
 
@@ -41,7 +45,53 @@
   <ion-toolbar color="primary">
     <ion-grid>
       <ion-row class="ion-justify-content-center">
+
         <ion-col size="2">
+
+          <div *ngIf="ratingCheck === false">
+            <ion-button fill="clear">
+              <ion-icon color="dark" name="star"></ion-icon>
+            </ion-button>
+          </div>
+
+          <div *ngIf="ratingCheck === true">
+            <ion-button fill="clear" id="rating-options">
+              <ion-icon color="light" name="star"></ion-icon>
+            </ion-button>
+
+            <ion-popover trigger="rating-options" [dismissOnSelect]="true">
+              <ng-template>
+                <ion-content>
+                  <ion-list>
+                    <ion-item (click)="setRating(1)">
+                      <ion-label>1 Stars</ion-label>
+                    </ion-item>
+                    <ion-item (click)="setRating(2)">
+                      <ion-label>2 Stars</ion-label>
+                    </ion-item>
+                    <ion-item (click)="setRating(3)">
+                      <ion-label>3 Stars</ion-label>
+                    </ion-item>
+                    <ion-item (click)="setRating(4)">
+                      <ion-label>4 Stars</ion-label>
+                    </ion-item>
+                    <ion-item (click)="setRating(5)">
+                      <ion-label>5 Stars</ion-label>
+                    </ion-item>
+                  </ion-list>
+                </ion-content>
+              </ng-template>
+            </ion-popover>
+          </div>
+        </ion-col>
+
+        <ion-col size="2">
+
+          <div *ngIf="isOnline === false">
+            <ion-button fill="clear">
+              <ion-icon color="dark" name="settings"></ion-icon>
+            </ion-button>
+          </div>
 
           <div *ngIf="isOnline === true">
           <ion-button fill="clear" id="other-options" >

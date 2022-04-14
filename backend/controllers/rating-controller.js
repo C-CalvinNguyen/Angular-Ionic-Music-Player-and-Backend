@@ -4,6 +4,9 @@ const Song = require('../models/song.js')
 const addRating = async (req, res) => {
     try{
         const songFind = await Song.findOne({_id: req.body.songId})
+
+        console.log('songFind', songFind);
+
         if(songFind != null){
 
             const ratingFind = await Rating.findOne({songId: songFind._id.toString(), userId: req.user._id.toString()})
@@ -20,6 +23,8 @@ const addRating = async (req, res) => {
 
                 // Save to database
                 tempRating.save()
+
+                console.log('rating added');
 
                 // Return response
                 return res.status(200).send("Rating successfully added")
@@ -64,10 +69,10 @@ const getAvgRatingBySong = async (req, res) => {
 
 const getRatingBySongAndUser = async (req, res) => {
     try {
-        const ratings = await Rating.findOne({songId: req.body.songId, userId: req.user._id.toString()})
+        const ratings = await Rating.findOne({songId: req.query.songId, userId: req.user.id.toString()})
 
         if (ratings == null) {
-            return res.status(200).json({"rating": "no rating"})
+            return res.status(200).json({"rating": null})
         }
 
         return res.status(200).send(ratings);

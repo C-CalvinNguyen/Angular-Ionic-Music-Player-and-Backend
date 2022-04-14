@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Component, OnInit } from '@angular/core';
 
 // Services
@@ -12,7 +13,9 @@ import { Capacitor } from '@capacitor/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Platform } from '@ionic/angular';
 
-import { BACKEND_ANDROID_SERVER, BACKEND_SERVER } from 'src/app/constants';
+import { BACKEND_ANDROID_SERVER, BACKEND_SERVER, TOKEN_KEY } from 'src/app/constants';
+import { Storage } from '@ionic/storage';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-player',
@@ -32,13 +35,17 @@ export class PlayerPage implements OnInit {
   bitRate = '320';
   format = 'mp3';
   currentSongInfo: any =  {image: 'assets/temp.jpg'};
+  ratingCheck = false;
+  rating = null;
 
   constructor(
     public audioService: AudioService,
     public songDataService: SongDataService,
     private httpClient: HttpClient,
     private plt: Platform,
-    private http: HttpClient
+    private http: HttpClient,
+    private storage: Storage,
+    private toastCtrl: ToastController
   ) {
 
     // Get Media Files
@@ -71,6 +78,7 @@ export class PlayerPage implements OnInit {
       let tempUrl2 = '';
       let imgUrl = '';
       let infoUrl = '';
+      let ratingUrl = '';
 
       console.log(this.currentPlt);
 
@@ -87,14 +95,47 @@ export class PlayerPage implements OnInit {
         tempUrl2 = `${BACKEND_ANDROID_SERVER}/song/stream?s=${file.onlineId}&f=${this.format}&b=${this.bitRate}`;
         imgUrl = `${BACKEND_ANDROID_SERVER}/song/image?id=${file.onlineId}`;
         infoUrl = `${BACKEND_ANDROID_SERVER}/song/get?id=${file.onlineId}`;
+        ratingUrl = `${BACKEND_ANDROID_SERVER}/rating/get?songId=${file.onlineId}`;
 
       } else {
 
         tempUrl2 = `${BACKEND_SERVER}/song/stream?s=${file.onlineId}&b=${this.bitRate}&f=${this.format}`;
         imgUrl = `${BACKEND_SERVER}/song/image?id=${file.onlineId}`;
         infoUrl = `${BACKEND_SERVER}/song/get?id=${file.onlineId}`;
+        ratingUrl = `${BACKEND_SERVER}/rating/get?songId=${file.onlineId}`;
 
       }
+
+      let tempJWT = '';
+      this.storage.get(TOKEN_KEY).then(data => {
+        tempJWT = data.toString();
+
+        if (tempJWT === 'jwt-token' || tempJWT === '') {
+
+        } else {
+          fetch(ratingUrl, {
+            method: 'GET',
+            headers: new Headers({
+              // eslint-disable-next-line quote-props
+              'Authorization': `Bearer ${tempJWT}`
+            })
+          })
+          .then(res => {
+            res.json().then(json => {
+
+              const tempCheck = json;
+
+              if (tempCheck !== undefined) {
+                this.rating = json.score;
+              }
+              this.ratingCheck = true;
+            });
+          });
+        }
+
+      });
+
+
 
       fetch(imgUrl, {})
       .then((res) => {
@@ -126,6 +167,8 @@ export class PlayerPage implements OnInit {
 
       this.isOnline = false;
       this.isWav = false;
+      this.ratingCheck = false;
+      this.rating = null;
 
       this.currentSongInfo.image = 'assets/temp.jpg';
       this.currentSongInfo.title = this.currentFile.file.title;
@@ -311,6 +354,53 @@ export class PlayerPage implements OnInit {
 
     }
 
+  }
+
+  setRating(rating: number) {
+    this.rating = rating;
+
+    let addRatingUrl = '';
+
+    if (this.currentPlt[0] === 'android') {
+      addRatingUrl = `${BACKEND_ANDROID_SERVER}/rating/add`;
+    } else {
+      addRatingUrl = `${BACKEND_SERVER}/rating/add`;
+    }
+
+    let tempJWT = '';
+    this.storage.get(TOKEN_KEY).then(async data => {
+      tempJWT = data.toString();
+
+      if (tempJWT === 'jwt-token' || tempJWT === '') {
+        const toast = await this.toastCtrl.create({
+          message: 'Not logged In',
+          duration: 2000
+        });
+
+        toast.present();
+
+      } else {
+        fetch(addRatingUrl, {
+          method: 'POST',
+          headers: new Headers({
+            // eslint-disable-next-line quote-props
+            'Authorization': `Bearer ${tempJWT}`,
+            'Content-Type': 'application/json'
+          }),
+          body: JSON.stringify({songId: `${this.currentFile.file.onlineId}`, score: `${rating}`})
+        })
+        .then(async res => {
+          if (res.status === 200) {
+            const toast = await this.toastCtrl.create({
+              message: 'Rating added',
+              duration: 2000
+            });
+            toast.present();
+          }
+        });
+      }
+
+    });
   }
 
 }

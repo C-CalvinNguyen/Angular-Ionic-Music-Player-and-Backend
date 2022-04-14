@@ -63,4 +63,8 @@ export class AccountPage implements OnInit {
     this.router.navigate(['edit-song']);
   }
 
+  deleteAccount() {
+
+  }
+
 }

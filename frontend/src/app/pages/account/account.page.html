@@ -18,13 +18,13 @@
   </ion-label>
 
   <ion-row style="justify-content: center; margin-top: 20px;">
-    <ion-button>Edit Account Info</ion-button>
+    <ion-button [routerLink]="['/edit-account']">Edit Account Info</ion-button>
   </ion-row>
   <ion-row style="justify-content: center;">
-    <ion-button>Change Password</ion-button>
+    <ion-button [routerLink]="['/change-password']">Change Password</ion-button>
   </ion-row>
   <ion-row style="justify-content: center;">
-    <ion-button color="danger">Delete Account</ion-button>
+    <ion-button color="danger" (click)="deleteAccount()">Delete Account</ion-button>
   </ion-row>
 </ion-content>
 

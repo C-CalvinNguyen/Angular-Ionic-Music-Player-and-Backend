@@ -65,6 +65,14 @@ const routes: Routes = [
   },  {
     path: 'edit-song',
     loadChildren: () => import('./pages/edit-song/edit-song.module').then( m => m.EditSongPageModule)
+  },
+  {
+    path: 'edit-account',
+    loadChildren: () => import('./pages/edit-account/edit-account.module').then( m => m.EditAccountPageModule)
+  },
+  {
+    path: 'change-password',
+    loadChildren: () => import('./pages/change-password/change-password.module').then( m => m.ChangePasswordPageModule)
   }
 
 
