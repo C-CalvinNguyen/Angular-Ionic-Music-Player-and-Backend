@@ -5,6 +5,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import { Storage } from '@ionic/storage';
 import { NavigationExtras, Router } from '@angular/router';
 import { SongInfoService } from 'src/app/services/songInfo/song-info.service';
+import { AlertController, ToastController } from '@ionic/angular';
 
 
 @Component({
@@ -18,7 +19,8 @@ export class AccountPage implements OnInit {
   userSongs: any = [];
 
   constructor(private authService: AuthService, private storage: Storage, private router: Router,
-    private songInfoService: SongInfoService) {
+    private songInfoService: SongInfoService, private alertController: AlertController,
+    private toastController: ToastController) {
 
     this.user = this.authService.getUser();
     console.log(this.user);
@@ -67,7 +69,69 @@ export class AccountPage implements OnInit {
     this.router.navigate(['edit-song']);
   }
 
-  deleteAccount() {
+  async deleteAccount() {
+
+    const alert = await this.alertController.create({
+      header: 'Delete Account',
+      subHeader: 'Are you sure you want to delete your account?',
+      message: 'Please enter your password.',
+      inputs: [
+        {
+          name: 'password',
+          type: 'password',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Confirm Cancel');
+          }
+        }, {
+          text: 'Ok',
+          handler: (data) => {
+            console.log('Confirm Ok', data.password);
+
+            const tempPassword = data.password;
+
+            this.storage.get(TOKEN_KEY).then(jwtData => {
+              const tempJWT = jwtData.toString();
+
+              fetch(`${BACKEND_ANDROID_SERVER}/account/delete`, {
+                method: 'DELETE',
+                headers: new Headers({
+                  // eslint-disable-next-line quote-props
+                  'Authorization': `Bearer ${tempJWT}`,
+                  'Content-Type': 'application/json'
+                }),
+                body: JSON.stringify({password: tempPassword})
+              })
+              .then(async res => {
+                if (res.status === 200) {
+
+                  this.authService.logout();
+                  this.router.navigate(['home']);
+
+                } else {
+                  const toast = await this.toastController.create({
+                    message: 'Error: Password does not match',
+                    duration: 2000
+                  });
+
+                  await toast.present();
+                }
+              });
+
+            });
+
+          }
+        }
+      ]
+    });
+
+    await alert.present();
 
   }
 
