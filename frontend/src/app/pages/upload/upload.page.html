@@ -9,7 +9,7 @@
 
   <form [formGroup]="uploadForm" (ngSubmit)="uploadContent()">
     <ion-label>Audio File (WAV, MP3, OGG)</ion-label>
-    <input type="file" accept="audio/*" #audioChooser required/>
+    <input type="file" #audioChooser required/>
     <br/>
     <ion-label>Image File</ion-label>
     <br/>
