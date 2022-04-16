@@ -61,26 +61,33 @@ const routes: Routes = [
   },
   {
     path: 'account',
-    loadChildren: () => import('./pages/account/account.module').then( m => m.AccountPageModule)
+    loadChildren: () => import('./pages/account/account.module').then( m => m.AccountPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'edit-song',
-    loadChildren: () => import('./pages/edit-song/edit-song.module').then( m => m.EditSongPageModule)
+    loadChildren: () => import('./pages/edit-song/edit-song.module').then( m => m.EditSongPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'edit-account',
-    loadChildren: () => import('./pages/edit-account/edit-account.module').then( m => m.EditAccountPageModule)
+    loadChildren: () => import('./pages/edit-account/edit-account.module').then( m => m.EditAccountPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'change-password',
-    loadChildren: () => import('./pages/change-password/change-password.module').then( m => m.ChangePasswordPageModule)
-  },  {
+    loadChildren: () => import('./pages/change-password/change-password.module').then( m => m.ChangePasswordPageModule),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'share-playlist',
-    loadChildren: () => import('./pages/share-playlist/share-playlist.module').then( m => m.SharePlaylistPageModule)
+    loadChildren: () => import('./pages/share-playlist/share-playlist.module').then( m => m.SharePlaylistPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'get-playlist',
-    loadChildren: () => import('./pages/get-playlist/get-playlist.module').then( m => m.GetPlaylistPageModule)
+    loadChildren: () => import('./pages/get-playlist/get-playlist.module').then( m => m.GetPlaylistPageModule),
+    canActivate: [AuthGuard]
   },
 
 
