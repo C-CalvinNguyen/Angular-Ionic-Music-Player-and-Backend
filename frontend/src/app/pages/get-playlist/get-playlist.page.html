@@ -1,9 +1,15 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>getPlaylist</ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>Get Playlist</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+
+  <form style="margin-top: 10%;" [formGroup]="getPlaylistForm" (ngSubmit)="getPlaylist()">
+    <ion-label >Playlist ID</ion-label>
+    <ion-input type="text" formControlName="id" style="border: 1px solid black;" required></ion-input>
+    <ion-button type="submit" color="primary" expand="full">Get Playlist</ion-button>
+  </form>
 
 </ion-content>

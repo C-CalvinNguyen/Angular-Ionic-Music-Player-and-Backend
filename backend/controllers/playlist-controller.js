@@ -111,7 +111,7 @@ const removePlaylist = async(req, res) => {
 // Works, possibly migrate to params
 const getPlaylist = async(req, res) => {
     try{
-        const playlistFind = await Playlist.findOne({_id: req.body.playlistId})
+        const playlistFind = await Playlist.findOne({_id: req.query.id})
 
         if (playlistFind == null) {
             return res.status(400).json({playlist: {}, message: 'no playlist'})
