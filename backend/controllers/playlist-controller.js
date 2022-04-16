@@ -15,7 +15,6 @@ const addPlaylist = async(req, res) => {
         // Create Playlist For DB
         let tempPlaylist = Playlist()
         tempPlaylist.title = req.body.title
-        tempPlaylist.description = req.body.description
         tempPlaylist.userId = req.user._id.toString()
         tempPlaylist.list = req.body.list
         await tempPlaylist.save()
@@ -112,13 +111,13 @@ const removePlaylist = async(req, res) => {
 // Works, possibly migrate to params
 const getPlaylist = async(req, res) => {
     try{
-        const playlistFind = await Playlist.findOne({_id: req.body.playlistId})
+        const playlistFind = await Playlist.findOne({_id: req.query.id})
 
         if (playlistFind == null) {
-            return res.status(200).json({"playlist": "no playlist with that id"})
+            return res.status(400).json({playlist: {}, message: 'no playlist'})
         }
 
-        return res.status(200).send(playlistFind)
+        return res.status(200).send({playlist: playlistFind, message: 'playlist found'})
     } catch (err) {
         console.log(err)
         return res.status(400).json({'message': err})

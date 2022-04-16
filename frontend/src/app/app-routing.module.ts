@@ -62,7 +62,8 @@ const routes: Routes = [
   {
     path: 'account',
     loadChildren: () => import('./pages/account/account.module').then( m => m.AccountPageModule)
-  },  {
+  },
+  {
     path: 'edit-song',
     loadChildren: () => import('./pages/edit-song/edit-song.module').then( m => m.EditSongPageModule)
   },
@@ -73,7 +74,15 @@ const routes: Routes = [
   {
     path: 'change-password',
     loadChildren: () => import('./pages/change-password/change-password.module').then( m => m.ChangePasswordPageModule)
-  }
+  },  {
+    path: 'share-playlist',
+    loadChildren: () => import('./pages/share-playlist/share-playlist.module').then( m => m.SharePlaylistPageModule)
+  },
+  {
+    path: 'get-playlist',
+    loadChildren: () => import('./pages/get-playlist/get-playlist.module').then( m => m.GetPlaylistPageModule)
+  },
+
 
 
 ];

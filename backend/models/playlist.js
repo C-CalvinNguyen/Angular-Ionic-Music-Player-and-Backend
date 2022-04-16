@@ -8,11 +8,6 @@ var PlaylistSchema = new mongoose.Schema({
         required: [true, "Playlist title not entered."]
     },
 
-    // Possible description of what the playlist is about
-    description: {
-        type: String,
-    },
-
     // Song Plays (Number, Defaults)
     // Increment Each Play
     plays: {
@@ -27,9 +22,13 @@ var PlaylistSchema = new mongoose.Schema({
     },
 
     // Contains songs from list
-    list:{
-        type:[String], //Assuming this is the way we refer to songid
-     },
+    list: [{
+        title: String,
+        artist: String,
+        sourceType: String,
+        source: String,
+        onlineId: String
+    }],
 
     // Image Path (String) (url or mongodb storage)
     // Temporary Property

@@ -189,6 +189,31 @@ export class DatabaseService {
     return this.songs.asObservable();
   }
 
+  getSongByOnlineId(onlineId: string) {
+
+    const toReturn = this.database.executeSql('SELECT * FROM song where song.onlineId = (?)', [onlineId]).then(data => {
+      let tempSong: any = null;
+
+      if (data.rows.length > 0) {
+        tempSong = {
+          id: data.rows.item(0).id,
+          title: data.rows.item(0).title,
+          artist: data.rows.item(0).artist,
+          album: data.rows.item(0).album,
+          genre: data.rows.item(0).genre,
+          source: data.rows.item(0).source,
+          sourceType: data.rows.item(0).sourceType,
+          onlineId: data.rows.item(0).onlineId
+        };
+      }
+
+      return tempSong;
+
+    });
+
+    return toReturn;
+  }
+
   getPlaylists() {
 
     this.database.executeSql('SELECT * FROM list', []).then(data => {
@@ -255,6 +280,36 @@ export class DatabaseService {
     });
 
     return this.songs.asObservable();
+
+  }
+
+  getOnlineSongsByPlaylist(id: string) {
+
+    const tempSong2 = this.database.executeSql(
+      `SELECT * FROM song LEFT JOIN song_list ON song.id = song_list.s_id WHERE song_list.l_id = ${id} AND song.sourceType = "online"`,
+    []).then(data => {
+
+      const tempSong: Song[] = [];
+
+      if (data.rows.length > 0) {
+        for (let i = 0; i < data.rows.length; i++) {
+          tempSong.push({
+            id: data.rows.item(i).id,
+            title: data.rows.item(i).title,
+            artist: data.rows.item(i).artist,
+            album: data.rows.item(i).album,
+            genre: data.rows.item(i).genre,
+            source: data.rows.item(i).source,
+            sourceType: data.rows.item(i).sourceType,
+            onlineId: data.rows.item(i).onlineId
+          });
+        }
+      }
+
+      return tempSong;
+    });
+
+    return tempSong2;
 
   }
 

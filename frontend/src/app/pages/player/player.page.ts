@@ -11,11 +11,12 @@ import { AudioState } from 'src/app/interfaces/audio-state';
 // Packages
 import { Capacitor } from '@capacitor/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Platform } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 
 import { BACKEND_ANDROID_SERVER, BACKEND_SERVER, TOKEN_KEY } from 'src/app/constants';
 import { Storage } from '@ionic/storage';
 import { ToastController } from '@ionic/angular';
+import { AddSongPlaylistModalComponent } from 'src/app/components/add-song-playlist-modal/add-song-playlist-modal.component';
 
 @Component({
   selector: 'app-player',
@@ -45,7 +46,8 @@ export class PlayerPage implements OnInit {
     private plt: Platform,
     private http: HttpClient,
     private storage: Storage,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private modalController: ModalController
   ) {
 
     // Get Media Files
@@ -403,4 +405,50 @@ export class PlayerPage implements OnInit {
     });
   }
 
+  async addSongToPlaylist() {
+
+    if (this.currentFile.file === undefined) {
+
+    } else {
+
+      let tempSong = {};
+
+      if (this.currentFile.file.id === undefined) {
+
+        tempSong = {
+          title: this.currentSongInfo.title,
+          artist: this.currentSongInfo.artist,
+          album: 'No Album',
+          genre: this.currentSongInfo.genre,
+          source: this.currentFile.file.source,
+          sourceType: this.currentFile.file.sourceType,
+          onlineId: this.currentFile.file.onlineId
+        };
+      } else {
+
+        tempSong = {
+          id: this.currentFile.file.id,
+          title: this.currentSongInfo.title,
+          artist: this.currentSongInfo.artist,
+          album: 'No Album',
+          genre: this.currentSongInfo.genre,
+          source: this.currentFile.file.source,
+          sourceType: this.currentFile.file.sourceType,
+          onlineId: this.currentFile.file.onlineId
+        };
+      }
+
+      console.log(this.currentFile.file);
+
+      const modal = await this.modalController.create({
+        component: AddSongPlaylistModalComponent,
+        componentProps: {
+          inputSong: tempSong
+        }
+      });
+
+      await modal.present();
+    }
+
+    }
 }

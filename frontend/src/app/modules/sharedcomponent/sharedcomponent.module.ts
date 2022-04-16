@@ -6,10 +6,11 @@ import { EditPlaylistModalComponent } from 'src/app/components/edit-playlist-mod
 
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import { SharePlaylistModalComponent } from 'src/app/components/share-playlist-modal/share-playlist-modal.component';
 
 
 @NgModule({
-  declarations: [AddSongPlaylistModalComponent, CreatePlaylistModalComponent, EditPlaylistModalComponent],
+  declarations: [AddSongPlaylistModalComponent, CreatePlaylistModalComponent, EditPlaylistModalComponent, SharePlaylistModalComponent],
   imports: [
     CommonModule,
     IonicModule,
@@ -18,7 +19,8 @@ import { FormsModule } from '@angular/forms';
   exports: [
     AddSongPlaylistModalComponent,
     CreatePlaylistModalComponent,
-    EditPlaylistModalComponent
+    EditPlaylistModalComponent,
+    SharePlaylistModalComponent
   ]
 })
 export class SharedcomponentModule { }
