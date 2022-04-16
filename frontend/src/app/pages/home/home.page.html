@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      Music Player App
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Music Player App</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div id="container">
+
+    <ion-row>
+      <ion-col>
+        <ion-button [routerLink]="['/player']">Player</ion-button>
+        <ion-button [routerLink]="['/file']">Scan</ion-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-button style="margin-right: 5px; margin-left: 5px;" expand="block" [routerLink]="['/list/all/song']">Show All</ion-button>
+    <ion-button style="margin-right: 5px; margin-left: 5px;" expand="block" [routerLink]="['/list/genre']">Show Genres</ion-button>
+    <ion-button style="margin-right: 5px; margin-left: 5px;" expand="block" [routerLink]="['/list/artist']">Show Artists</ion-button>
+    <ion-button style="margin-right: 5px; margin-left: 5px;" expand="block" [routerLink]="['/list/playlist']">Show Playlists</ion-button>
+
+  </div>
+</ion-content>

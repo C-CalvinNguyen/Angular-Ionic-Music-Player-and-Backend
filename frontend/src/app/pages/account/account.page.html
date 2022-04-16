@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Account</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content style=" border-bottom: 3px solid black;">
+  <ion-title style="text-align: center; margin-top: 20px;">
+    User Information
+  </ion-title>
+  <br/>
+
+  <ion-label style="padding: 25vw;">
+    Username: {{user.username}}
+  </ion-label>
+  <ion-label style="padding: 25vw;">
+    Email: {{user.email}}
+  </ion-label>
+
+  <ion-row style="justify-content: center; margin-top: 20px;">
+    <ion-button [routerLink]="['/edit-account']">Edit Account Info</ion-button>
+  </ion-row>
+  <ion-row style="justify-content: center;">
+    <ion-button [routerLink]="['/change-password']">Change Password</ion-button>
+  </ion-row>
+  <ion-row style="justify-content: center;">
+    <ion-button color="danger" (click)="deleteAccount()">Delete Account</ion-button>
+  </ion-row>
+</ion-content>
+
+<ion-content>
+  <ion-list style="margin-top: 5px;">
+    <div *ngFor="let song of userSongs; let i = index;">
+      <ion-item>
+        <ion-label>{{song.title}}<br/>
+          <div style="font-size: 10px;">Total Views: {{song.plays}}</div>
+        </ion-label>
+        <ion-button (click)="editSong(i)" color="primary" side="end">Edit Song Info</ion-button>
+      </ion-item>
+    </div>
+  </ion-list>
+</ion-content>

@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Search</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="searchForm" (ngSubmit)="search()">
+    <ion-button type="submit" color="primary" expand="full">Search</ion-button>
+    <ion-item>
+      <ion-input type="text" placeholder="Search" formControlName="searchText"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Conditions</ion-label>
+      <ion-select interface="popover" formControlName="searchCondition">
+        <ion-select-option value="title">Title</ion-select-option>
+        <ion-select-option value="artist">Artist</ion-select-option>
+        <ion-select-option value="genre">Genre</ion-select-option>
+
+      </ion-select>
+    </ion-item>
+  </form>
+  <ion-text color="medium" *ngIf="searchContent.length === 0" class="ion-padding ion-text-center">
+    <p>No songs found</p>
+  </ion-text>
+  <ion-list style="margin-top: 5px;">
+    <div *ngFor="let song of searchContent; let i = index;">
+      <ion-item (click)="selectSong(i)">
+        <ion-label>{{song.title}}<br/>
+          <div style="font-size: 10px;">by {{song.artist}}</div>
+        </ion-label>
+      </ion-item>
+    </div>
+  </ion-list>
+</ion-content>
