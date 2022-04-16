@@ -189,6 +189,31 @@ export class DatabaseService {
     return this.songs.asObservable();
   }
 
+  getSongByOnlineId(onlineId: string) {
+
+    let toReturn = this.database.executeSql('SELECT * FROM song where song.onlineId = (?)', [onlineId]).then(data => {
+      let tempSong: any = null;
+
+      if (data.rows.length > 0) {
+        tempSong = {
+          id: data.rows.item(0).id,
+          title: data.rows.item(0).title,
+          artist: data.rows.item(0).artist,
+          album: data.rows.item(0).album,
+          genre: data.rows.item(0).genre,
+          source: data.rows.item(0).source,
+          sourceType: data.rows.item(0).sourceType,
+          onlineId: data.rows.item(0).onlineId
+        };
+      }
+
+      return tempSong;
+
+    });
+
+    return toReturn;
+  }
+
   getPlaylists() {
 
     this.database.executeSql('SELECT * FROM list', []).then(data => {

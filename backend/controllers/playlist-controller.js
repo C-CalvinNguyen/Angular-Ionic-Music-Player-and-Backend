@@ -15,7 +15,6 @@ const addPlaylist = async(req, res) => {
         // Create Playlist For DB
         let tempPlaylist = Playlist()
         tempPlaylist.title = req.body.title
-        tempPlaylist.description = req.body.description
         tempPlaylist.userId = req.user._id.toString()
         tempPlaylist.list = req.body.list
         await tempPlaylist.save()
