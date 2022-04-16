@@ -114,10 +114,10 @@ const getPlaylist = async(req, res) => {
         const playlistFind = await Playlist.findOne({_id: req.body.playlistId})
 
         if (playlistFind == null) {
-            return res.status(200).json({"playlist": "no playlist with that id"})
+            return res.status(400).json({playlist: {}, message: 'no playlist'})
         }
 
-        return res.status(200).send(playlistFind)
+        return res.status(200).send({playlist: playlistFind, message: 'playlist found'})
     } catch (err) {
         console.log(err)
         return res.status(400).json({'message': err})

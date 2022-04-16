@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Share Playlist</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+
+        <!-- The actual file/folder item with click event -->
+        <ion-item *ngFor="let f of displayList; let i = index;" (click)="sharePlaylist(i)">
+          <ion-label>
+            {{ f.title }}
+          </ion-label>
+        </ion-item>
+
+  </ion-list>
+
+</ion-content>

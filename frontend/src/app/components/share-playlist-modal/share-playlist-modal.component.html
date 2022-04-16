@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title style="width: 100%;">Online Songs Only</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+
+        <!-- The actual file/folder item with click event -->
+        <ion-item *ngFor="let f of inputSongList">
+          <ion-label>
+            {{ f.title }}
+          </ion-label>
+        </ion-item>
+
+  </ion-list>
+
+  <ion-button expand="block" (click)="uploadPlaylist()">Upload Playlist</ion-button>
+
+</ion-content>
