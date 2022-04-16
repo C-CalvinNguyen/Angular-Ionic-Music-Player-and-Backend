@@ -85,7 +85,7 @@ export class UploadPage implements OnInit {
           const tempGenre = this.uploadForm.get('genre').value;
           fd.append('genre', tempGenre);
 
-          const uploadUrl = `http://10.0.2.2:8080/song/add`;
+          const uploadUrl = `${BACKEND_ANDROID_SERVER}/song/add`;
 
           await fetch(uploadUrl, {
             method: 'POST',

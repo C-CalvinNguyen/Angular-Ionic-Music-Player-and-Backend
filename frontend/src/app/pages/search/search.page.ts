@@ -120,7 +120,7 @@ export class SearchPage implements OnInit {
       artist: this.searchContent[index].artist,
       sourceType: this.searchContent[index].sourceType,
       // eslint-disable-next-line no-underscore-dangle
-      source: `http://10.0.2.2:8080/song/stream?s=${this.searchContent[index]._id.toString()}&b=320&f=mp3`,
+      source: `${BACKEND_ANDROID_SERVER}/song/stream?s=${this.searchContent[index]._id.toString()}&b=320&f=mp3`,
       // eslint-disable-next-line no-underscore-dangle
       onlineId: `${this.searchContent[index]._id.toString()}`
     }];
