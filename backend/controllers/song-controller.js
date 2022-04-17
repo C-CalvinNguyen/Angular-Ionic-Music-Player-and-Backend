@@ -42,12 +42,16 @@ function convert(file, finalPath, title, format, bitrate) {
 */
 function makeSubDir(finalPath, format, bitrate) {
 
-    fs.mkdir(path.join(finalPath, format, bitrate), {recursive: true}, (err) => {
-        if (err != null) {
-            console.log(err)
-        } 
+    return new Promise(function(res, rej) {
+        fs.mkdir(path.join(finalPath, format, bitrate), {recursive: true}, (err) => {
+            if (err != null) {
+                console.log(err)
+                rej(err)
+            } 
+        }).then(() => {
+            res()
+        })
     })
-
 }
 
 
@@ -60,52 +64,54 @@ function makeSubDir(finalPath, format, bitrate) {
     Delete temp file after conversion
 ===============================================================================
 */
-function convertSong(file, ext, finalPath, title) {
+async function convertSong(file, ext, finalPath, title) {
     return new Promise(function (res, rej) {
         // If tempfile is WAV create subdirectories & convert (WAV, MP3, OGG)
     if (ext == "wav") {
         
         // make MP3 & OGG subdirectories
-        makeSubDir(finalPath, 'mp3', '320')
-        makeSubDir(finalPath, 'mp3', '256')
-        makeSubDir(finalPath, 'mp3', '128')
-        makeSubDir(finalPath, 'ogg', '256')
-        makeSubDir(finalPath, 'ogg', '128')
-
-        // make wav subdirectory and copy file into it
-        fs.mkdir(path.join(finalPath, 'wav'), {recursive: true}, (err) => {
-            if (err != null) {
-                console.log(err)
-            } else {
-                fs.copyFile(file.path, path.join(finalPath, ext, (title+'.wav')), (err) => {
-                    if (err != null) {
-                        console.log(err)
-                    }
-                })
-            }
-        })
-
-        // Convert temp file into formats, then delete file after conversion
         Promise.all([
-            convert(file, finalPath, title, 'mp3', '320'),
-            convert(file, finalPath, title, 'mp3', '256'),
-            convert(file, finalPath, title, 'mp3', '128'),
-            convert(file, finalPath, title, 'ogg', '256'),
-            convert(file, finalPath, title, 'ogg', '128')
-        ])
-        .then(() => {
-            fs.unlink(file.path, (err) => {
+            makeSubDir(finalPath, 'mp3', '320'),
+            makeSubDir(finalPath, 'mp3', '256'),
+            makeSubDir(finalPath, 'mp3', '128'),
+            makeSubDir(finalPath, 'ogg', '256'),
+            makeSubDir(finalPath, 'ogg', '128')
+        ]).then(() => {
+            // make wav subdirectory and copy file into it
+            fs.mkdir(path.join(finalPath, 'wav'), {recursive: true}, (err) => {
                 if (err != null) {
                     console.log(err)
                 } else {
-                    console.log('deleted temp file')
-                    res()
+                    fs.copyFile(file.path, path.join(finalPath, ext, (title+'.wav')), (err) => {
+                        if (err != null) {
+                            console.log(err)
+                        }
+                    })
                 }
             })
+
+            // Convert temp file into formats, then delete file after conversion
+            Promise.all([
+                convert(file, finalPath, title, 'mp3', '320'),
+                convert(file, finalPath, title, 'mp3', '256'),
+                convert(file, finalPath, title, 'mp3', '128'),
+                convert(file, finalPath, title, 'ogg', '256'),
+                convert(file, finalPath, title, 'ogg', '128')
+            ])
+            .then(() => {
+                fs.unlink(file.path, (err) => {
+                    if (err != null) {
+                        console.log(err)
+                    } else {
+                        console.log('deleted temp file')
+                        res()
+                    }
+                })
+            })
+            .catch(err => {
+                console.log(err)
+                res()
         })
-        .catch(err => {
-            console.log(err)
-            res()
         })
     }
 
@@ -113,34 +119,38 @@ function convertSong(file, ext, finalPath, title) {
     if (ext == 'mp3' || ext == 'ogg') {
 
         // make MP3 & OGG subdirectories
-        makeSubDir(finalPath, 'mp3', '320')
-        makeSubDir(finalPath, 'mp3', '256')
-        makeSubDir(finalPath, 'mp3', '128')
-        makeSubDir(finalPath, 'ogg', '256')
-        makeSubDir(finalPath, 'ogg', '128')
-        
-        // Convert temp file into formats, then delete file after conversion
         Promise.all([
-            convert(file, finalPath, title, 'mp3', '320'),
-            convert(file, finalPath, title, 'mp3', '256'),
-            convert(file, finalPath, title, 'mp3', '128'),
-            convert(file, finalPath, title, 'ogg', '256'),
-            convert(file, finalPath, title, 'ogg', '128')
+            makeSubDir(finalPath, 'mp3', '320'),
+            makeSubDir(finalPath, 'mp3', '256'),
+            makeSubDir(finalPath, 'mp3', '128'),
+            makeSubDir(finalPath, 'ogg', '256'),
+            makeSubDir(finalPath, 'ogg', '128')
         ])
         .then(() => {
-            fs.unlink(file.path, (err) => {
-                if (err != null) {
-                    console.log(err)
-                } else {
-                    console.log('deleted temp file')
-                    res()
-                }
+            // Convert temp file into formats, then delete file after conversion
+            Promise.all([
+                convert(file, finalPath, title, 'mp3', '320'),
+                convert(file, finalPath, title, 'mp3', '256'),
+                convert(file, finalPath, title, 'mp3', '128'),
+                convert(file, finalPath, title, 'ogg', '256'),
+                convert(file, finalPath, title, 'ogg', '128')
+            ])
+            .then(() => {
+                fs.unlink(file.path, (err) => {
+                    if (err != null) {
+                        console.log(err)
+                    } else {
+                        console.log('deleted temp file')
+                        res()
+                    }
+                })
+            })
+            .catch(err => {
+                console.log(err)
+                res()
             })
         })
-        .catch(err => {
-            console.log(err)
-            res()
-        })
+
     }
     })
 }
