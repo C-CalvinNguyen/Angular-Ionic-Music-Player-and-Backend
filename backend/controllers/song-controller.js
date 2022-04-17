@@ -42,16 +42,12 @@ function convert(file, finalPath, title, format, bitrate) {
 */
 function makeSubDir(finalPath, format, bitrate) {
 
-    return new Promise(function(res, rej) {
-        fs.mkdir(path.join(finalPath, format, bitrate), {recursive: true}, (err) => {
-            if (err != null) {
-                console.log(err)
-                rej(err)
-            } 
-        }).then(() => {
-            res()
-        })
+    fs.mkdir(path.join(finalPath, format, bitrate), {recursive: true}, (err) => {
+        if (err != null) {
+            console.log(err)
+        } 
     })
+
 }
 
 
@@ -70,50 +66,44 @@ async function convertSong(file, ext, finalPath, title) {
     if (ext == "wav") {
         
         // make MP3 & OGG subdirectories
+        makeSubDir(finalPath, 'mp3', '320')
+        makeSubDir(finalPath, 'mp3', '256')
+        makeSubDir(finalPath, 'mp3', '128')
+        makeSubDir(finalPath, 'ogg', '256')
+        makeSubDir(finalPath, 'ogg', '128')
+
+        // make wav subdirectory and copy file into it
+        fs.mkdir(path.join(finalPath, 'wav'), {recursive: true}, (err) => {
+            if (err != null) {
+                console.log(err)
+            } else {
+                fs.copyFile(file.path, path.join(finalPath, ext, (title+'.wav')), (err) => {
+                    if (err != null) {
+                        console.log(err)
+                    }
+                })
+            }
+        })
+
+        // Convert temp file into formats, then delete file after conversion
         Promise.all([
-            makeSubDir(finalPath, 'mp3', '320'),
-            makeSubDir(finalPath, 'mp3', '256'),
-            makeSubDir(finalPath, 'mp3', '128'),
-            makeSubDir(finalPath, 'ogg', '256'),
-            makeSubDir(finalPath, 'ogg', '128')
-        ]).then(() => {
-            // make wav subdirectory and copy file into it
-            fs.mkdir(path.join(finalPath, 'wav'), {recursive: true}, (err) => {
+            convert(file, finalPath, title, 'mp3', '320'),
+            convert(file, finalPath, title, 'mp3', '256'),
+            convert(file, finalPath, title, 'mp3', '128'),
+            convert(file, finalPath, title, 'ogg', '256'),
+            convert(file, finalPath, title, 'ogg', '128')
+        ])
+        .then(() => {
+            fs.unlink(file.path, (err) => {
                 if (err != null) {
                     console.log(err)
                 } else {
-                    fs.copyFile(file.path, path.join(finalPath, ext, (title+'.wav')), (err) => {
-                        if (err != null) {
-                            console.log(err)
-                        }
-                    })
+                    console.log('deleted temp file')
+                    res()
                 }
             })
-
-            // Convert temp file into formats, then delete file after conversion
-            Promise.all([
-                convert(file, finalPath, title, 'mp3', '320'),
-                convert(file, finalPath, title, 'mp3', '256'),
-                convert(file, finalPath, title, 'mp3', '128'),
-                convert(file, finalPath, title, 'ogg', '256'),
-                convert(file, finalPath, title, 'ogg', '128')
-            ])
-            .then(() => {
-                fs.unlink(file.path, (err) => {
-                    if (err != null) {
-                        console.log(err)
-                    } else {
-                        console.log('deleted temp file')
-                        res()
-                    }
-                })
-            })
-            .catch(err => {
-                console.log(err)
-                res()
         })
-        })
-        .catch(() => {
+        .catch(err => {
             console.log(err)
             res()
         })
@@ -123,42 +113,34 @@ async function convertSong(file, ext, finalPath, title) {
     if (ext == 'mp3' || ext == 'ogg') {
 
         // make MP3 & OGG subdirectories
+        makeSubDir(finalPath, 'mp3', '320')
+        makeSubDir(finalPath, 'mp3', '256')
+        makeSubDir(finalPath, 'mp3', '128')
+        makeSubDir(finalPath, 'ogg', '256')
+        makeSubDir(finalPath, 'ogg', '128')
+        
+        // Convert temp file into formats, then delete file after conversion
         Promise.all([
-            makeSubDir(finalPath, 'mp3', '320'),
-            makeSubDir(finalPath, 'mp3', '256'),
-            makeSubDir(finalPath, 'mp3', '128'),
-            makeSubDir(finalPath, 'ogg', '256'),
-            makeSubDir(finalPath, 'ogg', '128')
+            convert(file, finalPath, title, 'mp3', '320'),
+            convert(file, finalPath, title, 'mp3', '256'),
+            convert(file, finalPath, title, 'mp3', '128'),
+            convert(file, finalPath, title, 'ogg', '256'),
+            convert(file, finalPath, title, 'ogg', '128')
         ])
         .then(() => {
-            // Convert temp file into formats, then delete file after conversion
-            Promise.all([
-                convert(file, finalPath, title, 'mp3', '320'),
-                convert(file, finalPath, title, 'mp3', '256'),
-                convert(file, finalPath, title, 'mp3', '128'),
-                convert(file, finalPath, title, 'ogg', '256'),
-                convert(file, finalPath, title, 'ogg', '128')
-            ])
-            .then(() => {
-                fs.unlink(file.path, (err) => {
-                    if (err != null) {
-                        console.log(err)
-                    } else {
-                        console.log('deleted temp file')
-                        res()
-                    }
-                })
-            })
-            .catch(err => {
-                console.log(err)
-                res()
+            fs.unlink(file.path, (err) => {
+                if (err != null) {
+                    console.log(err)
+                } else {
+                    console.log('deleted temp file')
+                    res()
+                }
             })
         })
-        .catch(() => {
+        .catch(err => {
             console.log(err)
             res()
         })
-
     }
     })
 }
