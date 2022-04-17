@@ -113,6 +113,10 @@ async function convertSong(file, ext, finalPath, title) {
                 res()
         })
         })
+        .catch(() => {
+            console.log(err)
+            res()
+        })
     }
 
     // if tempfile is MP3 or OGG create subdirectories & convert (MP3, OGG)
@@ -149,6 +153,10 @@ async function convertSong(file, ext, finalPath, title) {
                 console.log(err)
                 res()
             })
+        })
+        .catch(() => {
+            console.log(err)
+            res()
         })
 
     }
