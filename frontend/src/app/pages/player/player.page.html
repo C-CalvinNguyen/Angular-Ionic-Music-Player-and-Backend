@@ -134,6 +134,9 @@
                   <ion-popover trigger="bitrate-trigger" [dismissOnSelect]="true">
                     <ng-template>
                       <ion-content>
+                        <ion-item (click)="setBitrate('128')">
+                          <ion-label>128</ion-label>
+                        </ion-item>
                         <ion-item (click)="setBitrate('256')">
                           <ion-label>256</ion-label>
                         </ion-item>
