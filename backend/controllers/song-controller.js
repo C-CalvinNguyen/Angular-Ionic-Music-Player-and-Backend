@@ -105,6 +105,7 @@ function convertSong(file, ext, finalPath, title) {
         })
         .catch(err => {
             console.log(err)
+            res()
         })
     }
 
@@ -138,6 +139,7 @@ function convertSong(file, ext, finalPath, title) {
         })
         .catch(err => {
             console.log(err)
+            res()
         })
     }
     })

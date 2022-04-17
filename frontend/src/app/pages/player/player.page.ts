@@ -325,16 +325,6 @@ export class PlayerPage implements OnInit {
 
   setBitrate(bitrate: any) {
 
-    if (bitrate === '128') {
-
-      this.bitRate = '128';
-
-      const index = this.currentFile.index;
-      const file = this.files[index];
-
-      this.openFile(file, index);
-
-    }
     if (bitrate === '256') {
 
       this.bitRate = '256';
