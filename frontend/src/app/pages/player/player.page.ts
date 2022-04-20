@@ -258,12 +258,14 @@ export class PlayerPage implements OnInit {
 
   }
 
+  // Used for shuffling
   shuffle() {
     const index = Math.floor(Math.random() * (this.files.length - 1));
     const file = this.files[index];
     this.openFile(file, index);
   }
 
+  // Used for repeating
   toggleRepeat() {
     this.state.repeat = (!this.state.repeat);
     console.log(`Repeat: ${this.state.repeat}`);
@@ -275,10 +277,12 @@ export class PlayerPage implements OnInit {
     this.openFile(file, index);
   }
 
+  // Used to set playbackspeed
   setPlaybackSpeed(speed) {
     this.audioService.playbackSpeed(speed);
   }
 
+  // Used to set format of online songs
   setFormat(format: any) {
 
     if (format === 'mp3') {
@@ -316,6 +320,7 @@ export class PlayerPage implements OnInit {
 
   }
 
+  // Used to set bitrate of online songs
   setBitrate(bitrate: any) {
 
     if (bitrate === '256') {
@@ -341,6 +346,8 @@ export class PlayerPage implements OnInit {
 
   }
 
+
+  // Used for setting ratings of online songs
   setRating(rating: number) {
     this.rating = rating;
 
@@ -388,6 +395,7 @@ export class PlayerPage implements OnInit {
     });
   }
 
+  // Opens add song to playlist modal
   async addSongToPlaylist() {
 
     if (this.currentFile.file === undefined) {
