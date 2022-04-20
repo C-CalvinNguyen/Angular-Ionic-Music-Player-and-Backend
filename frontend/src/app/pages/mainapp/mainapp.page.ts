@@ -8,11 +8,12 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 })
 export class MainappPage implements OnInit {
 
+  // Variables used
   user: any = {};
 
+  // Gets user from authService
   constructor(private authService: AuthService) {
     this.user = this.authService.getUser();
-    console.log(this.user);
   }
 
   ngOnInit() {

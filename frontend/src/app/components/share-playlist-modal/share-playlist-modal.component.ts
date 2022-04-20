@@ -11,6 +11,10 @@ import { TOKEN_KEY, BACKEND_ANDROID_SERVER } from 'src/app/constants';
 })
 export class SharePlaylistModalComponent implements OnInit {
 
+  /*
+    inputSongList is the playlist to add (online only)
+    playlistTitle is the selected playlist title
+  */
   @Input() inputSongList: any;
   @Input() playlistTitle: any;
 
@@ -19,17 +23,21 @@ export class SharePlaylistModalComponent implements OnInit {
     private storage: Storage,
     private alertController: AlertController,
     private toastController: ToastController
-  ) { console.log('Share Playlist Modal Open'); }
+  ) { }
 
   ngOnInit() {}
 
+  // Called to upload playlist to backend
   uploadPlaylist() {
 
+    // Gets JWT token from local storage
     this.storage.get(TOKEN_KEY).then(async data => {
       const jwt = data.toString();
 
+      // Backend URL
       const playlistUrl = `${BACKEND_ANDROID_SERVER}/playlist/add`;
 
+      // Fetch method (post, with JWT, passes array of songs)
       fetch(playlistUrl, {
         method: 'POST',
         headers: {
@@ -40,6 +48,8 @@ export class SharePlaylistModalComponent implements OnInit {
         body: JSON.stringify({title: this.playlistTitle, list: this.inputSongList})
       })
       .then(async res => {
+
+        // If successful alert user and close modal
         if (res.status === 200) {
           res.json().then(async json => {
 
@@ -58,6 +68,7 @@ export class SharePlaylistModalComponent implements OnInit {
           });
         } else {
 
+          // If failed send toast
           const toast = await this.toastController.create({
             message: 'Error uploading playlist',
             duration: 3000

@@ -15,9 +15,13 @@ import { AlertController, ToastController } from '@ionic/angular';
 })
 export class AccountPage implements OnInit {
 
+  // Variables Used
+  // User is the logged in user
   user: any = {};
+  // User songs is used to display a list of the users songs
   userSongs: any = [];
 
+  // constructor, get user from authService
   constructor(private authService: AuthService, private storage: Storage, private router: Router,
     private songInfoService: SongInfoService, private alertController: AlertController,
     private toastController: ToastController) {
@@ -25,22 +29,27 @@ export class AccountPage implements OnInit {
     this.user = this.authService.getUser();
     console.log(this.user);
 
+    // Call getUserSongs method
     this.getUserSongs();
    }
 
   ngOnInit() {
   }
 
+  // Update user songs
   ionViewDidEnter() {
     this.getUserSongs();
   }
 
+  // getUserSongs() method calls song list from the backend
   getUserSongs() {
     try {
 
+      // get JWT from local storage
       this.storage.get(TOKEN_KEY).then(data => {
         const tempJWT = data.toString();
 
+        // fetch list of songs from backend
         fetch(`${BACKEND_ANDROID_SERVER}/song/userSongs`, {
           method: 'GET',
           headers: new Headers({
@@ -48,6 +57,7 @@ export class AccountPage implements OnInit {
             'Authorization': `Bearer ${tempJWT}`
           })
         }).then(res => {
+          // set userSongs as the songs list from json
           res.json().then(async json => {
             this.userSongs = json;
             console.log(this.userSongs);
@@ -60,6 +70,7 @@ export class AccountPage implements OnInit {
     }
   }
 
+  // navigate to editSong page and passes the song using a service
   editSong(index: any) {
 
     const tempSong = this.userSongs[index];
@@ -69,6 +80,8 @@ export class AccountPage implements OnInit {
     this.router.navigate(['edit-song']);
   }
 
+  // deleteAccount() method messages and asks user for password using alert
+  // if password matches logout user, and user is deleted from backend
   async deleteAccount() {
 
     const alert = await this.alertController.create({
@@ -92,13 +105,15 @@ export class AccountPage implements OnInit {
         }, {
           text: 'Ok',
           handler: (data) => {
-            console.log('Confirm Ok', data.password);
+            console.log('Confirm Ok');
 
             const tempPassword = data.password;
 
+            // get JWT from local storage
             this.storage.get(TOKEN_KEY).then(jwtData => {
               const tempJWT = jwtData.toString();
 
+              // call delete endpoint in backend
               fetch(`${BACKEND_ANDROID_SERVER}/account/delete`, {
                 method: 'DELETE',
                 headers: new Headers({
@@ -109,12 +124,16 @@ export class AccountPage implements OnInit {
                 body: JSON.stringify({password: tempPassword})
               })
               .then(async res => {
+
+                // if successful logout in client
                 if (res.status === 200) {
 
                   this.authService.logout();
                   this.router.navigate(['home']);
 
                 } else {
+
+                  // if unsucessful send toast to user
                   const toast = await this.toastController.create({
                     message: 'Error: Password does not match',
                     duration: 2000
@@ -131,6 +150,7 @@ export class AccountPage implements OnInit {
       ]
     });
 
+    // Present alert to user
     await alert.present();
 
   }

@@ -11,12 +11,13 @@
 
   <ng-container *ngIf="type !== 'playlist'">
     <ion-list>
+
       <ion-item-sliding *ngFor="let f of displayList">
-        <!-- The actual file/folder item with click event -->
         <ion-item (click)="itemClicked(f)">
           {{ f }}
         </ion-item>
       </ion-item-sliding>
+
     </ion-list>
 </ng-container>
 
@@ -24,8 +25,9 @@
   <ion-button expand="block" (click)="createPlaylist()">Create Playlist</ion-button>
 
   <ion-list>
+
     <ion-item-sliding *ngFor="let f of displayList">
-      <!-- The actual file/folder item with click event -->
+
       <ion-item (click)="itemClicked(f.id)">
         {{ f.title }}
       </ion-item>
@@ -41,14 +43,17 @@
           <ion-icon name="trash" slot="icon-only"></ion-icon>
         </ion-item-option>
       </ion-item-options>
+
     </ion-item-sliding>
+
   </ion-list>
 </ng-container>
 
 <ng-container *ngIf="type === 'playlist'">
   <ion-list>
+
     <ion-item-sliding *ngFor="let song of displaySong, let i = index">
-      <!-- The actual file/folder item with click event -->
+
       <ion-item (click)="itemClicked(i)">
         {{ song.title }}
       </ion-item>
@@ -60,13 +65,16 @@
       </ion-item-options>
 
     </ion-item-sliding>
+
   </ion-list>
+
 </ng-container>
 
 <ng-container *ngIf="type !== 'playlist'">
   <ion-list>
+
     <ion-item-sliding *ngFor="let song of displaySong, let i = index">
-      <!-- The actual file/folder item with click event -->
+
       <ion-item (click)="itemClicked(i)">
         {{ song.title }}
       </ion-item>
@@ -76,7 +84,9 @@
           <ion-icon name="add-circle" slot="icon-only"></ion-icon>
         </ion-item-option>
       </ion-item-options>
+
     </ion-item-sliding>
+
   </ion-list>
 </ng-container>
 

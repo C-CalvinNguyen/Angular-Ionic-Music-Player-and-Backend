@@ -9,6 +9,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
+
+  /*
+    Variables used
+    credentials properties used for binding to form
+  */
   credentials = {
     username: 'temp',
     email: 'temp@email.com',
@@ -24,6 +29,7 @@ export class LoginPage implements OnInit {
   ngOnInit() {
   }
 
+  // login() method navigates to mainapp page if successful login
   login() {
     this.auth.login(this.credentials).subscribe(async res => {
       if (res) {

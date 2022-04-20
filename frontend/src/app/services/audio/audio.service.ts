@@ -67,7 +67,7 @@ export class AudioService {
   }
 
   playbackSpeed(speed) {
-    console.log(speed);
+
     this.audioObj.playbackRate = speed;
   }
 
@@ -118,8 +118,6 @@ export class AudioService {
   }
 
   private updateStateEvents(event: Event): void {
-
-    console.log(event.type);
 
     switch (event.type) {
       case 'canplay':

@@ -15,11 +15,12 @@ import { ToastController } from '@ionic/angular';
 })
 export class EditSongPage implements OnInit {
 
+  // Variables used
   song: any = {title: 'test'};
   avgRating: 0;
-
   editForm: FormGroup;
 
+  // Get the song from the songInfoService, and set the editForm group with defaults to the song properties
   constructor(private router: Router, private songInfoService: SongInfoService,
     private storage: Storage, private toastCtrl: ToastController) {
     this.songInfoService.getFiles().subscribe(data => {
@@ -32,14 +33,15 @@ export class EditSongPage implements OnInit {
       });
     });
 
+    // Call methods for more information
     this.getAvgRating();
     this.getSongImage();
   }
 
   ngOnInit() {
-    console.log(this.song);
   }
 
+  // getAvgRating() method calls backend for information on song rating
   getAvgRating() {
 
     // eslint-disable-next-line @typescript-eslint/dot-notation
@@ -50,12 +52,12 @@ export class EditSongPage implements OnInit {
       .then(res => {
         res.json().then(json => {
           this.avgRating = json.avg;
-          console.log(this.avgRating);
         });
       });
 
   }
 
+  // getSongImage() method calls backend for information on song image
   getSongImage() {
 
     // eslint-disable-next-line @typescript-eslint/dot-notation
@@ -74,11 +76,11 @@ export class EditSongPage implements OnInit {
 
   }
 
+  /*
+    editSong() method gets the new title, artist or genre from the form
+    and sends this updated information to the backend
+  */
   editSong() {
-
-    console.log(this.editForm.get('title').value);
-    console.log(this.editForm.get('artist').value);
-    console.log(this.editForm.get('genre').value);
 
     let tempTitle = this.editForm.get('title').value;
     let tempArtist = this.editForm.get('artist').value;
@@ -96,11 +98,11 @@ export class EditSongPage implements OnInit {
       tempGenre = this.song.genre;
     }
 
-    console.log(this.song);
-
+    // backend URL endpoint
     // eslint-disable-next-line no-underscore-dangle
     const editUrl = `${BACKEND_ANDROID_SERVER}/song/edit/${this.song._id}`;
 
+    // get JWT token from local storage
     this.storage.get(TOKEN_KEY).then(data => {
       const tempJwt = data.toString();
 
@@ -108,6 +110,7 @@ export class EditSongPage implements OnInit {
 
       } else {
 
+        // fetch backend with new information
         fetch(editUrl, {
           method: 'POST',
           headers: new Headers({
@@ -118,6 +121,8 @@ export class EditSongPage implements OnInit {
           body: JSON.stringify({title: tempTitle, artist: tempArtist, genre: tempGenre})
         })
         .then(async res => {
+
+          // If successful present toast to user
           if (res.status === 200) {
             const toast = await this.toastCtrl.create({
               message: 'Song Updated',

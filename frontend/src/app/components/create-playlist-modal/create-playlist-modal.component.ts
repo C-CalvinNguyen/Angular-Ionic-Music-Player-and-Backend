@@ -9,10 +9,13 @@ import { DatabaseService } from '../../services/database/database.service';
 })
 export class CreatePlaylistModalComponent implements OnInit {
 
+  // Variables
+  // binded to form
   newPlaylist = { title: ''};
 
   constructor(private modalController: ModalController, private db: DatabaseService) { }
 
+  // Check if database is ready
   ngOnInit() {
     this.db.getDatabaseState().subscribe(rdy => {
       if (rdy) {
@@ -21,11 +24,11 @@ export class CreatePlaylistModalComponent implements OnInit {
     });
   }
 
+  // createNewPlaylist, get playlist title from newPlaylist variable
   async createNewPlaylist() {
     const tempTitle = this.newPlaylist.title;
 
     await this.db.addPlaylist(tempTitle).then(() => {
-      console.log(tempTitle + ' Playlist Added');
       this.modalController.dismiss();
     });
   }

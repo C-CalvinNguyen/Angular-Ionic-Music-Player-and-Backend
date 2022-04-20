@@ -73,8 +73,7 @@ export class FilePage implements OnInit {
     When user clicks on a folder, it opens to that folder
   */
   async itemClicked(entry: any) {
-    console.log('hello item clicked');
-    console.log('directory ', entry);
+
       // Open the file or folder
       if (entry.stat.type === 'file' || entry.stat.type === 'NSFileTypeRegular') {
 
@@ -104,19 +103,14 @@ export class FilePage implements OnInit {
 
       loading.present();
 
-      console.log(temp);
-
       for (const tempFile of temp) {
 
         // Convert a device filepath into a Web View-friendly path.
         const fileUrl = Capacitor.convertFileSrc(tempFile.stat.uri);
-        console.log(fileUrl);
 
         // Pass url to jsmediatags
         jsmediatags.read(fileUrl, {
           onSuccess: (tags) => {
-            console.log('Tags Found');
-            console.log(tags.tags);
 
             const tempTitle = (
               tags.tags.title === undefined || tags.tags.title.trim() === ''
@@ -143,8 +137,6 @@ export class FilePage implements OnInit {
             );
           },
           onError: (error) => {
-            console.log('Invalid || NO TAGS');
-            console.log(error);
 
             const tempTitle = this.getTitle(tempFile.name);
             const tempArtist = 'No Artist';
@@ -227,14 +219,12 @@ export class FilePage implements OnInit {
         await this.getDocuments(`${currentFolder}/${file.name}`)
         .then(async (data) => {
 
-          //console.log(data);
-
           // push with spread operator
           toReturn.push(...await this.scan(`${currentFolder}/${file.name}`, data));
         });
       }
     }
-    //console.log({message: 'array to be returned', toReturn});
+
     return toReturn;
   }
 
@@ -275,7 +265,6 @@ export class FilePage implements OnInit {
           text: 'Cancel',
           role: 'cancel',
           handler: () => {
-            console.log('Cancel clicked');
           }
         },
         {
@@ -283,7 +272,6 @@ export class FilePage implements OnInit {
           handler: async () => {
             await this.db.deleteAllData()
             .then(() => {
-              console.log('Database Data Deleted');
               this.scanForAudio(folderContent, currentFolder);
             });
           }

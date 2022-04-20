@@ -1,7 +1,6 @@
 <ion-list>
   <ion-radio-group [(ngModel)]="selectPlaylist.id">
 
-      <!-- The actual file/folder item with click event -->
       <ion-item *ngFor="let f of displayList">
         <ion-label>
           {{ f.title }}

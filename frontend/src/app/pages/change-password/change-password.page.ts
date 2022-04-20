@@ -14,6 +14,10 @@ import { TOKEN_KEY, BACKEND_ANDROID_SERVER } from 'src/app/constants';
 })
 export class ChangePasswordPage implements OnInit {
 
+  /*
+    Variables used
+    credentials properties used for binding to form
+  */
   credentials = {
     oldPassword: '',
     newPassword: ''
@@ -25,6 +29,8 @@ export class ChangePasswordPage implements OnInit {
   ngOnInit() {
   }
 
+  // updatePassword() method alerts user that they will be logged out
+  // if successful logout user, if unsuccessful present toast to user
   async updatePassword() {
 
     const alert = await this.alertController.create({
@@ -43,11 +49,14 @@ export class ChangePasswordPage implements OnInit {
           role: 'OK',
           handler: async () => {
 
+            // get JWT from local storage
             this.storage.get(TOKEN_KEY).then(data => {
               const jwt = data.toString();
 
+              // backend URL endpoint
               const passwordUrl = `${BACKEND_ANDROID_SERVER}/account/update/password`;
 
+              // fetch to backend
               fetch(passwordUrl, {
                 method: 'POST',
                   headers: new Headers({
@@ -57,10 +66,13 @@ export class ChangePasswordPage implements OnInit {
                   body: JSON.stringify({oldPassword: this.credentials.oldPassword, newPassword: this.credentials.newPassword})
               })
               .then(async res => {
+
+                // if successful (200) logout user and navigate to home page
                 if (res.status === 200) {
                   this.authService.logout();
                   this.router.navigate(['/home']);
                 }
+                // if unsuccesful present toast to user
                 else if (res.status === 400) {
                   const toast = await this.toastController.create({
                     message: 'Password does not match',
@@ -70,6 +82,7 @@ export class ChangePasswordPage implements OnInit {
                   await toast.present();
 
                 } else {
+                  // other errors, present toast to user
                   const toast2 = await this.toastController.create({
                     message: 'Error updating password',
                     duration: 3000
@@ -86,6 +99,7 @@ export class ChangePasswordPage implements OnInit {
       ]
     });
 
+    // present alert
     await alert.present();
   }
 

@@ -17,11 +17,13 @@ import { BACKEND_ANDROID_SERVER } from 'src/app/constants';
 })
 export class UploadPage implements OnInit {
 
+  // Variables used (audioChooser, and imageChooser are for files)
   @ViewChild('audioChooser', {static: true}) public audioChooserElementRef: ElementRef;
   @ViewChild('imageChooser', {static: true}) public imageChooserElementRef: ElementRef;
   audio: File;
   image: File;
 
+  // FormGroup used for title, artist and genre FormControls
   uploadForm = new FormGroup({
     title: new FormControl(),
     artist: new FormControl(),
@@ -36,20 +38,13 @@ export class UploadPage implements OnInit {
     this.listnerImageChange();
   }
 
+  // uploadContent() sends the files and title, artist, genre information to the backend upload endpoint
   async uploadContent() {
 
     const loading = await this.loadingCtrl.create();
 
     loading.present();
     try {
-        //console.log(this.uploadForm.get('audio'));
-        console.log(this.uploadForm.get('title').value);
-        console.log(this.uploadForm.get('artist').value);
-        console.log(this.uploadForm.get('genre').value);
-        //console.log(this.uploadForm.get('image').value);
-
-        console.log(this.audio);
-        console.log(this.image);
 
         const fd = new FormData();
 
@@ -60,7 +55,6 @@ export class UploadPage implements OnInit {
             res.blob().then(blob => {
 
               const tempFile = new File([blob], 'temp.jpg', {type: 'image/jpg', lastModified: Date.now()});
-              console.log(tempFile);
 
               fd.append('image', tempFile);
             });
@@ -69,12 +63,14 @@ export class UploadPage implements OnInit {
           fd.append('image', this.image[0]);
         }
 
+        // Get JWT from local storage
         let tempJWT = '';
         this.storage.get(TOKEN_KEY).then(async data => {
           tempJWT = data.toString();
 
-          fd.append('audio', this.audio[0]);
 
+          // Adds all information to formdata which will be passed in the body
+          fd.append('audio', this.audio[0]);
 
           const tempTitle = this.uploadForm.get('title').value;
           fd.append('title', tempTitle);
@@ -87,6 +83,7 @@ export class UploadPage implements OnInit {
 
           const uploadUrl = `${BACKEND_ANDROID_SERVER}/song/add`;
 
+          // fetch() to backend and passes formdata
           await fetch(uploadUrl, {
             method: 'POST',
             body: fd,
@@ -94,6 +91,8 @@ export class UploadPage implements OnInit {
               'Authorization': `Bearer ${tempJWT}`
             }),
           }).then(async res => {
+
+            // If successful navigate to home and present success toast
             loading.dismiss();
             if (res.status === 200) {
               const toast = await this.toastCtrl.create({
@@ -103,6 +102,8 @@ export class UploadPage implements OnInit {
               toast.present();
               this.router.navigate(['/home']);
             }
+
+            // If unsuccessful with code 415 pass unsupported media type toast
             else if (res.status === 415) {
               const toast = await this.toastCtrl.create({
                 message: `Status: ${res.status} UNSUPPORTED MEDIA TYPE (WAV, MP3, OGG ONLY)`,
@@ -110,6 +111,8 @@ export class UploadPage implements OnInit {
               });
               toast.present();
             } else {
+
+              // present toast with error for any other error
               const toast = await this.toastCtrl.create({
                 message: `Status: ${res.status} ERROR`,
                 duration: 2000
@@ -129,6 +132,7 @@ export class UploadPage implements OnInit {
       }
   }
 
+  // Used to get audio file from input file type
   private listenerAudioChange() {
     const wireUpFileChooser = () => {
         const elementRef = this.audioChooserElementRef.nativeElement as HTMLInputElement;
@@ -140,6 +144,7 @@ export class UploadPage implements OnInit {
     wireUpFileChooser();
   }
 
+  // Used to get image file from input file type
   private listnerImageChange() {
     const wireUpFileChooser = () => {
         const elementRef = this.imageChooserElementRef.nativeElement as HTMLInputElement;

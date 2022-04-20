@@ -9,13 +9,17 @@ import { DatabaseService } from '../../services/database/database.service';
 })
 export class EditPlaylistModalComponent implements OnInit {
 
+  // Variables
+  // @Inputs from playlist list page
   @Input() playlistId;
   @Input() playlistTitle;
 
+  // binded for new playlist
   newPlaylist = {title: ''};
 
   constructor(private modalController: ModalController, private db: DatabaseService) { }
 
+  // Checks if database is ready
   ngOnInit() {
     this.db.getDatabaseState().subscribe(rdy => {
       if (rdy) {
@@ -24,6 +28,7 @@ export class EditPlaylistModalComponent implements OnInit {
     });
   }
 
+  // method editPlaylist(), calls database and sets title to newPlaylist variable
   async editPlaylist() {
     const tempTitle = this.newPlaylist.title;
     const tempId = this.playlistId;
@@ -31,7 +36,6 @@ export class EditPlaylistModalComponent implements OnInit {
     console.log(tempTitle, tempId);
 
     await this.db.editPlaylist(tempTitle, tempId).then(() => {
-      console.log(tempTitle + ' Playlist Edited');
       this.modalController.dismiss();
     });
 

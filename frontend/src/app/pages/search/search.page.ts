@@ -16,11 +16,16 @@ import { BACKEND_ANDROID_SERVER } from 'src/app/constants';
 })
 export class SearchPage implements OnInit {
 
+  /*
+    Variables used
+    searchForm is a FormGroup with the searchText and condition
+  */
   searchForm = new FormGroup({
     searchText: new FormControl(),
     searchCondition: new FormControl()
   });
 
+  // searchContent contains the content returned from the search
   searchContent: any[] = [];
 
   constructor(private toastCtrl: ToastController, private songDataService: SongDataService,
@@ -29,16 +34,16 @@ export class SearchPage implements OnInit {
   ngOnInit() {
   }
 
+  // search() method picks which backendURL to search (by title, artist, genre)
   search() {
 
+    // get JWT from local storage
     let tempJWT = '';
     this.storage.get(TOKEN_KEY).then(data => {
+
       tempJWT = data.toString();
       let tempSearch = this.searchForm.get('searchText').value;
       let tempCondition = this.searchForm.get('searchCondition').value;
-
-      console.log(tempSearch, tempCondition);
-
 
       // iF temp search and condition are null DEFAULT to teampSearch = '' and tempCondition = 'title'
       if (tempCondition === null) {
@@ -51,6 +56,7 @@ export class SearchPage implements OnInit {
 
       let url = '';
 
+      // checks which condition is selected and passes the appropriate URL
       switch (tempCondition) {
         case 'title':
           url = `${BACKEND_ANDROID_SERVER}/song/search/title?title=${tempSearch}`;
@@ -71,6 +77,7 @@ export class SearchPage implements OnInit {
   }
 
 
+  // calls the backend URL endpoint for a list of songs matching the condition
   callSearch(url, jwt) {
 
     try {
@@ -82,8 +89,6 @@ export class SearchPage implements OnInit {
         })
       }).then(res => {
         res.json().then(async json => {
-
-          console.log(json);
 
           if (json.songsFind.length === 0) {
             const toast = await this.toastCtrl.create({
@@ -99,7 +104,7 @@ export class SearchPage implements OnInit {
             });
 
             this.searchContent = json.songsFind;
-            console.log(this.searchContent);
+
             toast.present();
           }
         }).catch((err) => {
@@ -124,8 +129,6 @@ export class SearchPage implements OnInit {
       // eslint-disable-next-line no-underscore-dangle
       onlineId: `${this.searchContent[index]._id.toString()}`
     }];
-
-    console.log(tempSong);
 
     this.songDataService.setFiles(tempSong);
     this.router.navigate(['/player/']);

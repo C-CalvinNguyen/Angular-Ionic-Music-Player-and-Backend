@@ -9,8 +9,11 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 })
 export class RightMenuComponent implements OnInit {
 
+  // Variables (to check if user is logged in)
   user: any = null;
 
+  // constructor calls authService to check if user is logged in
+  // If user is logged in change right-menu options
   constructor(private menu: MenuController, private authService: AuthService) {
     this.authService.getisAuthenticated().subscribe(data => {
       this.user = data;
@@ -19,11 +22,13 @@ export class RightMenuComponent implements OnInit {
 
   ngOnInit() {}
 
+  // Used to open menu from right side (end)
   openEnd() {
     this.menu.enable(true, 'end');
     this.menu.open('end');
   }
 
+  // Logout button calls authService logout
   logout() {
     this.authService.logout();
   }

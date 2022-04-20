@@ -21,7 +21,10 @@ import { SongDataService } from 'src/app/services/songData/song-data.service';
 })
 export class ListPage implements OnInit {
 
+  // Variables used
+  // displayList contains list of playlists
   displayList = [];
+  // displaySong containts list of songs
   displaySong: Song[] = [];
   type = '';
   id = '';
@@ -51,13 +54,14 @@ export class ListPage implements OnInit {
   }
 
   // Gets Info To Display (Database Queries)
+  // Depending on criteria (genre, artist, playlist, all)
   async loadContent() {
 
     if (this.id === '') {
 
       if (this.type === 'genre') {
         await this.db.getGenres().then((data) => {
-          console.log(data);
+
           this.displayList = data;
         });
       }
@@ -90,8 +94,7 @@ export class ListPage implements OnInit {
     }
   }
 
-  // TO DO: IF SELECT ARTIST/GENRE -> Change Path with Condition (DONE)
-  // IF SELECT OF SONG -> PASS PLAYLIST ARRAY TO PLAYER && SONG SERVICE???
+  // If itemClicked() is a song, pass the current lsit of songs to player, if its a genre/artist/playlist open that criteria
   async itemClicked(entry: any) {
 
     if (this.id === '') {
@@ -99,13 +102,15 @@ export class ListPage implements OnInit {
       const pathToOpen = this.type + '/' + entry;
       this.router.navigateByUrl(`/list/${pathToOpen}`);
     } else {
-      // PASS PLAYLIST DATA && SELECTED SONG TO SONG SERVICE???
-      console.log({index: entry, songs: this.displaySong});
+
+      // PASS PLAYLIST DATA && SELECTED SONG TO SONG SERVICE
+
       this.songDatService.setFiles(this.displaySong);
       this.router.navigate(['/player/']);
     }
   }
 
+  // Opens create playlist modal
   async createPlaylist() {
     const modal = await this.modalController.create({
       component: CreatePlaylistModalComponent
@@ -117,6 +122,7 @@ export class ListPage implements OnInit {
     });
   }
 
+  // delete playlist method (calls databaseService)
   async deletePlaylist(id) {
     await this.db.deletePlaylist(id).then(() => {
       console.log('"Playlist Deleted"');
@@ -124,6 +130,7 @@ export class ListPage implements OnInit {
     this.loadContent();
   }
 
+  // Opens edit playlist modal
   async editPlaylist(id, ttl) {
     const modal = await this.modalController.create({
       component: EditPlaylistModalComponent,
@@ -139,6 +146,7 @@ export class ListPage implements OnInit {
     });
   }
 
+  // Opens add playlist modal
   async addSongToPlaylist(song) {
     const modal = await this.modalController.create({
       component: AddSongPlaylistModalComponent,
@@ -153,6 +161,7 @@ export class ListPage implements OnInit {
     });
   }
 
+  // Delete song from playlist method (calls databaseService)
   async deleteSongFromPlaylist(song, id) {
     await this.db.deleteSongFromPlaylist(song.id, id).then(() => {
       console.log('"Song Deleted From Playlist"');

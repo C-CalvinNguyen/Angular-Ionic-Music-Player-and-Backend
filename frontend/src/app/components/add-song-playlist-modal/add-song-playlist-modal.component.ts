@@ -10,12 +10,19 @@ import { DatabaseService } from '../../services/database/database.service';
 })
 export class AddSongPlaylistModalComponent implements OnInit {
 
+  // Variables of Modal
+  // @Input song from List page or Player page
   @Input() inputSong: Song;
+
+  // Used to display all playlists
   displayList = [];
+
+  // ID of selected playlist
   selectPlaylist = { id: '' };
 
   constructor(private modalController: ModalController, private db: DatabaseService) { }
 
+  // ngOnInit populates displayList with playlists from database
   ngOnInit() {
 
     this.db.getDatabaseState().subscribe(rdy => {
@@ -25,19 +32,25 @@ export class AddSongPlaylistModalComponent implements OnInit {
     });
   }
 
+  /*
+    method addSongToPlaylist() adds the song to the playlist
+    if song is offline, add song to playlist
+    if song is online check if it is added to local database and then add to playlist
+  */
   async addSongToPlaylist() {
 
+    // If song is offline add to playlist
     if (this.inputSong.sourceType === 'offline') {
       await this.db.addSongToPlaylist(this.inputSong.id, this.selectPlaylist.id).then(() => {
-        console.log(`Song Added To Playlist`);
         this.modalController.dismiss();
       });
     }
+
+    // If song is online check first if it exists in sqlite database
     else if(this.inputSong.sourceType === 'online') {
 
       // Find song in database by Online ID
       await this.db.getSongByOnlineId(this.inputSong.onlineId).then(async song => {
-        console.log('Database songs ',song);
 
         // If no song is found, create song in db and add it to playlist
         if (song === null) {
@@ -46,7 +59,6 @@ export class AddSongPlaylistModalComponent implements OnInit {
             this.inputSong.onlineId).then(async () => {
               await this.db.getSongByOnlineId(this.inputSong.onlineId).then(async data => {
                 await this.db.addSongToPlaylist(data.id, this.selectPlaylist.id).then(() => {
-                  console.log(`Song Added To Playlist`);
                   this.modalController.dismiss();
                 });
               });
@@ -55,7 +67,6 @@ export class AddSongPlaylistModalComponent implements OnInit {
 
           // if song was found add it to playlist
           await this.db.addSongToPlaylist(song.id, this.selectPlaylist.id).then(() => {
-            console.log(`Song Added To Playlist`);
             this.modalController.dismiss();
           });
         }

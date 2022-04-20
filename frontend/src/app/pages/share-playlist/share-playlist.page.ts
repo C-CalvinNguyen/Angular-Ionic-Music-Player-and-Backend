@@ -13,7 +13,10 @@ import { DatabaseService } from 'src/app/services/database/database.service';
 })
 export class SharePlaylistPage implements OnInit {
 
+  // Variables used
+  // displayList has the list of playlists
   displayList = [];
+  // selectPlaylist has the ID of the playlist the user has selected to share
   selectPlaylist = {id: ''};
 
   constructor(
@@ -23,6 +26,7 @@ export class SharePlaylistPage implements OnInit {
     private toastController: ToastController
   ) { }
 
+  // Get content from the backend
   ngOnInit() {
     this.db.getDatabaseState().subscribe(rdy => {
       if (rdy) {
@@ -34,10 +38,12 @@ export class SharePlaylistPage implements OnInit {
     });
   }
 
+  // Used to get content from backend
   async loadContent() {
     this.db.getPlaylists().subscribe(data => this.displayList = data);
   }
 
+  // Creates modal and passes the playlist (array of ONLINE songs) to the modal
   async sharePlaylist(index: number) {
 
     const modal = await this.modalController.create({

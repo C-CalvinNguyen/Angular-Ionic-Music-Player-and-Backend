@@ -72,8 +72,6 @@ export class PlayerPage implements OnInit {
     this.currentFile = { index, file };
     this.audioService.stop();
 
-    //console.log(file.sourceType);
-
     if (file.sourceType === 'online') {
       console.log('Hello This is Online');
       const src = file.source;
@@ -86,12 +84,6 @@ export class PlayerPage implements OnInit {
 
       this.isOnline = true;
 
-
-      /*
-      This is the path to get files from the backend (MUST RUN IONIC CAP RUN ANDROID --EXTERNAL)
-      Localhost is used for the android emulator and so if it tries to access a file on the localhost it checks the phone
-      To bypass this 10.0.2.2 is used however WE MIGHT RUN THE BACKEND ON DIGITALOCEAN
-      */
       if (this.currentPlt[0] === 'android') {
 
         tempUrl2 = `${BACKEND_ANDROID_SERVER}/song/stream?s=${file.onlineId}&f=${this.format}&b=${this.bitRate}`;
@@ -185,10 +177,11 @@ export class PlayerPage implements OnInit {
 
   playStream(url) {
     this.audioService.playStream(url, this.state.shuffle, this.state.repeat).subscribe(events => {
-      // listening for fun here
+
       if (this.state.songEnd === true && this.isLastPlaying() === false) {
         this.next();
       }
+
     });
   }
 

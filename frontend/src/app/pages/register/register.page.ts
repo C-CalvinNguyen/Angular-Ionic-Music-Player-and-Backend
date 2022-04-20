@@ -9,6 +9,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./register.page.scss'],
 })
 export class RegisterPage implements OnInit {
+
+  /*
+    Variables used
+    credentials properties used for binding to form
+  */
   credentials = {
     username: 'temp',
     email: 'temp@email.com',
@@ -24,6 +29,7 @@ export class RegisterPage implements OnInit {
   ngOnInit() {
   }
 
+  // register() method navigates to home page if successful registration
   register() {
     this.auth.register(this.credentials).subscribe(async res => {
       if (res) {
